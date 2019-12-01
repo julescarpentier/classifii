@@ -1,2 +1,4 @@
+matplotlib
+tensorflow
 nltk
 pandas
