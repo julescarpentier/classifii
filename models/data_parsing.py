@@ -8,23 +8,23 @@ labels = [
     'alt.atheism',
     'comp.graphics',
     'comp.os.ms-windows.misc',
-    # 'comp.sys.ibm.pc.hardware',
-    # 'comp.sys.mac.hardware',
-    # 'comp.windows.x',
-    # 'misc.forsale',
-    # 'rec.autos',
-    # 'rec.motorcycles',
-    # 'rec.sport.baseball',
-    # 'rec.sport.hockey',
-    # 'sci.crypt',
-    # 'sci.electronics',
-    # 'sci.med',
-    # 'sci.space',
-    # 'soc.religion.christian',
-    # 'talk.politics.guns',
-    # 'talk.politics.mideast',
-    # 'talk.politics.misc',
-    # 'talk.religion.misc'
+    'comp.sys.ibm.pc.hardware',
+    'comp.sys.mac.hardware',
+    'comp.windows.x',
+    'misc.forsale',
+    'rec.autos',
+    'rec.motorcycles',
+    'rec.sport.baseball',
+    'rec.sport.hockey',
+    'sci.crypt',
+    'sci.electronics',
+    'sci.med',
+    'sci.space',
+    'soc.religion.christian',
+    'talk.politics.guns',
+    'talk.politics.mideast',
+    'talk.politics.misc',
+    'talk.religion.misc'
 ]
 
 
@@ -50,9 +50,24 @@ def get_dataframe():
 
 def print_stats():
     df = get_dataframe()
+    print(df['length'].describe())
 
+
+def hist_length():
+    df = get_dataframe()
     plt.figure()
-    # df.plot.bar()
     df['length'].plot.hist()
+    plt.show()
 
+
+def pop_classes():
+    plt.figure()
+    x = []
+    height = []
+    for label in labels:
+        dir_path = 'data/20news-18828/' + label
+        x.append(label)
+        height.append(len(listdir(dir_path)))
+
+    plt.bar(x, height)
     plt.show()

@@ -1,3 +1,10 @@
-from models.data_parsing import print_stats
+from models.data_parsing import get_dataframe, print_stats, hist_length, pop_classes
 
-print_stats()
+print(get_dataframe())
+
+# print_stats()
+
+hist_length()
+
+pop_classes()
+
