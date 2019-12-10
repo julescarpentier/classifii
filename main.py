@@ -5,6 +5,7 @@ df_train = get_dataframe()
 
 print(df_train)
 
+
 def gen_train():
     for index, values in df_train.iterrows():
         yield (
@@ -35,7 +36,7 @@ model.compile(optimizer='adam',
               metrics=['accuracy'])
 
 print("ENTRAINEMENT")
-#ENCORE DES ERREURS ICI
+# ENCORE DES ERREURS ICI
 history = model.fit(ds_train.shuffle(10000).batch(512),
                     epochs=5,
                     # validation_data=validation_data.batch(512),
