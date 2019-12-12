@@ -1,6 +1,7 @@
 import pandas as pd
 import nltk.tokenize as tkn
 import matplotlib.pyplot as plt
+import numpy as np
 from os import listdir
 from os.path import isfile, join
 
@@ -48,8 +49,7 @@ def get_dataframe():
     return df
 
 
-def print_stats():
-    df = get_dataframe()
+def print_stats(df):
     print(df['length'].describe())
 
 
