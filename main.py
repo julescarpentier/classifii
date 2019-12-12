@@ -2,6 +2,8 @@ from models.data_parsing import *
 from models.first_model import *
 from FastText1 import *
 
+# print(type(model))
+
 df_train = get_dataframe()
 print(df_train)
 print(df_train.shape)
@@ -41,10 +43,10 @@ print("MODELE")
 model = get_model()
 print(model.summary())
 
-print("ENTRAINEMENT")
-# ENCORE DES ERREURS ICI
-history = model.fit(ds_train,
-                    epochs=5)
+# print("ENTRAINEMENT")
+# # ENCORE DES ERREURS ICI
+# history = model.fit(ds_train,
+#                     epochs=5)
 
 # print_stats()
 
