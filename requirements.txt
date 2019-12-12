@@ -1,3 +1,7 @@
+sqlalchemy
+werkzeug
+click
+flask
 matplotlib
 tensorflow
 nltk
