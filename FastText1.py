@@ -14,6 +14,9 @@ mots = [x[0] for x in model]
 # récupérer que les vecteurs correspondant aux mots
 vect = [x[1:] for x in model]
 
+# ajouter 1000 vecteurs de taille 0
+vect = vect + np.zeros(300)*1000
+
 # parcours les mots de wiki-news et les mots dans un tableau
 # #words = []
 # for word in model.vocab:
