@@ -8,7 +8,7 @@ from sklearn.neural_network import MLPClassifier
 model = KeyedVectors.load_word2vec_format('data/wiki-news-300d-1M.vec/wiki-news-300d-1M.vec')
 print(model.most_similar('desk'))
 
-# parcours les mots de wiki-news et les mets dans un tableau
+# parcours les mots de wiki-news et les mots dans un tableau
 words = []
 for word in model.vocab:
     words.append(word)
@@ -22,7 +22,10 @@ print("Vector components of a word: {}".format(
 df = get_dataframe()
 sentences = df["tokens"]
 
-# fonction permettant de vectoriser une phrase en fonction d'un model
+# cibles de ce que l'on véctorize
+target = df["target"]
+
+# fonction permettant de vectoriser tous les mots d'un document en fonction d'un model
 def sent_vectorizer(sent, model):
     sent_vec = []
     numw = 0
@@ -47,8 +50,8 @@ for sentence in sentences:
 
 X_train = V[0:700] # 70pourcent
 X_test = V[700:1000]  # 30pourcent
-Y_train = [0]*700
-Y_test = [0]*300
+Y_train = target[0:700]
+Y_test = target[700:1000]
 
 classifier = MLPClassifier(alpha=0.7, max_iter=400) # max_iter donne le nombre max d'iteration que l'on va faire
 classifier.fit(X_train, Y_train) # return train MPL model
