@@ -50,7 +50,7 @@ def get_model():
     model = tf.keras.Sequential()
     # A mettre : embeddedText layer
 
-    model.add(VocabLookup(vocab=mots, 1000)) # prend les indices
+    model.add(VocabLookup(vocab=mots, oov_buckets=1000)) # prend les indices
     model.add(CustomEmbedding(embeddings_array=vect))
     model.add(tf.keras.layers.Conv1D(filters=128, kernel_size=5, activation='relu', padding='same', input_shape=(None, 1)))
     model.add(tf.keras.layers.Dense(32, activation='sigmoid'))
