@@ -1,3 +1,6 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
 from models.data_parsing import *
 from models.first_model import *
 from FastText1 import *
