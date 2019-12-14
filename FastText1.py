@@ -5,17 +5,17 @@ from models.data_parsing import get_dataframe
 from sklearn.neural_network import MLPClassifier
 
 # affiche les mots les plus proches du mot desk
-model = KeyedVectors.load_word2vec_format('data/wiki-news-300d-1M.vec/wiki-news-300d-1M.vec')
-#print(model.most_similar('desk'))
-
-# récupérer les mots seulement
-mots = [x[0] for x in model]
-
-# récupérer que les vecteurs correspondant aux mots
-vect = [x[1:] for x in model]
-
-# ajouter 1000 vecteurs de taille 0
-vect = vect + np.zeros(300)*1000
+# model = KeyedVectors.load_word2vec_format('data/wiki-news-300d-1M.vec/wiki-news-300d-1M.vec')
+# #print(model.most_similar('desk'))
+#
+# # récupérer les mots seulement
+# mots = [x[0] for x in model]
+#
+# # récupérer que les vecteurs correspondant aux mots
+# vect = [x[1:] for x in model]
+#
+# # ajouter 1000 vecteurs de taille 0
+# vect = vect + np.zeros(300)*1000
 
 # parcours les mots de wiki-news et les mots dans un tableau
 # #words = []

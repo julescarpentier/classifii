@@ -1,3 +1,5 @@
+keras
+hub
 sqlalchemy
 werkzeug
 click

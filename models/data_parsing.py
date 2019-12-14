@@ -6,11 +6,11 @@ from os import listdir
 from os.path import isfile, join
 
 labels = [
-    'alt.atheism',
+    # 'alt.atheism',
     # 'comp.graphics',
-    # 'comp.os.ms-windows.misc',
-    # 'comp.sys.ibm.pc.hardware',
-    # 'comp.sys.mac.hardware',
+    'comp.os.ms-windows.misc',
+    'comp.sys.ibm.pc.hardware',
+    'comp.sys.mac.hardware',
     # 'comp.windows.x',
     # 'misc.forsale',
     # 'rec.autos',
