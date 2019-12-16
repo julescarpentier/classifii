@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block header %}
+    <h1>{% block title %}Show Text #{{ text.id }}{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+    {% for proof in proofs %}
+        <p>
+            {% for i in range(tokens|length) %}
+                <span {% if proof.tokens_contain(i) %}class="highlight"{% endif %}>{{ tokens[i] }}</span>
+            {% endfor %}
+        </p>
+    {% else %}
+        {% for token in tokens %}
+            <span>{{ token }}</span>
+        {% endfor %}
+    {% endfor %}
+{% endblock %}

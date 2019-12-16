@@ -83,7 +83,7 @@ for word, i in word_index.items():
         embedding_matrix[i] = embedding_vector
 
 
-# EMBDEDDING MODEL
+# EMBEDDING MODEL
 print("EMBEDDING MODEL")
 embedding_model = create_embedding_model(len(word_index), EMBEDDING_DIM, embedding_matrix, MAX_LENGTH_SEQUENCE)
 print(embedding_model.summary())

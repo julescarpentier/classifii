@@ -8,7 +8,7 @@ def create_app(test_config=None):
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_mapping(
         SECRET_KEY='dev',
-        SQLALCHEMY_DATABASE_URI='sqlite:////' + os.path.join(app.instance_path, 'webjustif.db'),
+        SQLALCHEMY_DATABASE_URI='sqlite:////' + os.path.join(app.instance_path, 'justifii.db'),
         SQLALCHEMY_TRACK_MODIFICATIONS=False,
     )
 
@@ -28,16 +28,17 @@ def create_app(test_config=None):
     from . import database
     database.init_app(app)
 
-    from . import auth
-    app.register_blueprint(auth.bp)
-
-    from . import annotate
-    app.register_blueprint(annotate.bp)
+    from justifii.blueprints import default
+    app.register_blueprint(default.bp)
     app.add_url_rule('/', endpoint='index')
 
-    # a simple page that says hello
-    @app.route('/hello')
-    def hello():
-        return 'Hello, World!'
+    from justifii.blueprints import auth
+    app.register_blueprint(auth.bp)
+
+    from justifii.blueprints import text
+    app.register_blueprint(text.bp)
+
+    from justifii.blueprints import proof
+    app.register_blueprint(proof.bp)
 
     return app

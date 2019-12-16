@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block header %}
+    <h1>{% block title %}Proofs{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">User</th>
+            <th scope="col">Text</th>
+            <th scope="col">Tokens</th>
+            <th scope="col">Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for proof in proofs %}
+            <tr>
+                <th scope="row">{{ proof.id }}</th>
+                <td>{{ proof.user }}</td>
+                <td>{{ proof.text.file_path }}</td>
+                <td>{{ proof.tokens }}</td>
+                <td>
+                    <a class="btn btn-sm btn-info" href="{{ url_for('proof.show', proof_id=proof.id) }}">show</a>
+{#                    <a class="btn btn-sm btn-primary" href="{{ url_for('proof.edit', proof_id=proof.id) }}">edit</a>#}
+                    <form class="d-inline" action="{{ url_for('proof.delete', proof_id=proof.id) }}" method="post">
+                        <button type="submit" class="btn btn-sm btn-danger">delete</button>
+                    </form>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="5" class="text-center">Nothing to show here...</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
