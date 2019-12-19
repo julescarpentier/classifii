@@ -15,7 +15,6 @@ EMBEDDING_DIM = 100
 MAX_LENGTH_SEQUENCE = 2000
 MAX_NB_WORDS = 80000
 
-
 # DATAFRAME
 df_train = get_dataframe()
 print("SHUFFLING")
@@ -36,7 +35,6 @@ sequences = tokenizer.texts_to_sequences(texts)
 # padding (pre-padding i.e 0 before)
 data = pad_sequences(sequences, maxlen=MAX_LENGTH_SEQUENCE)
 
-
 # LABELS
 targets = df_train['target'].to_numpy()
 # Transform labels ([1 2 .. 19 20]) into binary vectors ([[1 0 .. 0 0] [0 1 0 .. 0] .. [0 0 .. 0 1]]). Necessary to do.
@@ -49,14 +47,12 @@ print(labels[:10])
 print(labels.shape)
 print("===============================")
 
-
 # TRAIN AND TEST DATA (80%-20% ou 70%-30%)
 nb_train_sample = int(TRAINING_SPLIT * data.shape[0])
 x_train = data[:nb_train_sample]
 y_train = labels[:nb_train_sample]
 x_test = data[nb_train_sample:]
 y_test = labels[nb_train_sample:]
-
 
 # PRE-TRAINED WORD VECTORS (GloVe)
 GLOVE_DIR = 'data/glove'
@@ -82,17 +78,75 @@ for word, i in word_index.items():
         # words not found in embedding index will be randomized.
         embedding_matrix[i] = embedding_vector
 
+# MATRICE DE VECTEURS ALEATOIRES (ON VEUT VOIR SI L'EMBEDDED TEXT EST VRAIMENT UTILE)
+# random_embedding_matrix = np.random.random((len(word_index) + 1, EMBEDDING_DIM))
+
+# MODEL WITHOUT EMBEDDED TEXT
+# print("MODEL WITH RANDOM VECTORIZED WORDS IN THE EMBEDDING LAYER")
+# random_embedding_model = create_embedding_model(len(word_index), EMBEDDING_DIM, random_embedding_matrix,
+#                                                 MAX_LENGTH_SEQUENCE)
+# print(random_embedding_model.summary())
+#
+# # TRAINING THE RANDOM MODEL
+# print("TRAINING MODEL WITHOUT EMBEDDED TEXT")
+# history_1 = random_embedding_model.fit(x_train, y_train, validation_data=(x_test, y_test), epochs=5, batch_size=32)
 
 # EMBDEDDING MODEL
 print("EMBEDDING MODEL")
 embedding_model = create_embedding_model(len(word_index), EMBEDDING_DIM, embedding_matrix, MAX_LENGTH_SEQUENCE)
 print(embedding_model.summary())
 
+# TRAINING THE EMBEDDING MODEL
+print("TRAINING EMBEDDING MODEL")
+history_2 = embedding_model.fit(x_train, y_train, validation_data=(x_test, y_test), epochs=8, batch_size=32)
 
-# TRAINING MODEL
-print("TRAINING MODEL")
-history = embedding_model.fit(x_train, y_train, validation_data=(x_test, y_test), epochs=20, batch_size=32)
 
+# summarize history for accuracy
+def plot_history(history):
+    plt.plot(history.history['accuracy'])
+    plt.plot(history.history['val_accuracy'])
+    plt.title('model accuracy')
+    plt.ylabel('accuracy')
+    plt.xlabel('epoch')
+    plt.legend(['train', 'test'], loc='upper left')
+    plt.show()
+    # summarize history for loss
+    plt.plot(history.history['loss'])
+    plt.plot(history.history['val_loss'])
+    plt.title('model loss')
+    plt.ylabel('loss')
+    plt.xlabel('epoch')
+    plt.legend(['train', 'test'], loc='upper left')
+    plt.show()
+
+
+def compare_history(history_1, history_2):
+    plt.plot(history_1.history['accuracy'])
+    plt.plot(history_1.history['val_accuracy'])
+    plt.plot(history_2.history['accuracy'])
+    plt.plot(history_2.history['val_accuracy'])
+    plt.title('model accuracy')
+    plt.ylabel('accuracy')
+    plt.xlabel('epoch')
+    plt.legend(['train_no_embedding', 'test_no_embedding', 'train_with_embedding', 'test_with_embedding'],
+               loc='upper left')
+    plt.show()
+    # summarize history for loss
+    plt.plot(history_1.history['loss'])
+    plt.plot(history_1.history['val_loss'])
+    plt.plot(history_2.history['loss'])
+    plt.plot(history_2.history['val_loss'])
+    plt.title('model loss')
+    plt.ylabel('loss')
+    plt.xlabel('epoch')
+    plt.legend(['train_no_embedding', 'test_no_embedding', 'train_with_embedding', 'test_with_embedding'],
+               loc='upper left')
+    plt.show()
+
+
+# plot_history(history_1)
+plot_history(history_2)
+# compare_history(history_1, history_2)
 
 # RESULTATS ACTUELS (modèle très simple: embeddingLayer-conv1D-Dense-Dense. Les batchs sont mélangés à chaque nouvelle époque)
 # 2 labels (atheism vs comp.graphics) : précision 95% au bout de 2 époques
