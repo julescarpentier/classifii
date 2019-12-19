@@ -91,7 +91,7 @@ for word, i in word_index.items():
 # print("TRAINING MODEL WITHOUT EMBEDDED TEXT")
 # history_1 = random_embedding_model.fit(x_train, y_train, validation_data=(x_test, y_test), epochs=5, batch_size=32)
 
-# EMBDEDDING MODEL
+# EMBEDDING MODEL
 print("EMBEDDING MODEL")
 embedding_model = create_embedding_model(len(word_index), EMBEDDING_DIM, embedding_matrix, MAX_LENGTH_SEQUENCE)
 print(embedding_model.summary())

@@ -1,9 +1,9 @@
+werkzeug
 keras
 hub
-sqlalchemy
-werkzeug
 click
 flask
+flask_sqlalchemy
 matplotlib
 tensorflow
 nltk

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html class="h-100" lang="en">
+<head>
+    {% block head %}
+        <meta charset="UTF-8">
+        <title>{% block title %}{% endblock %} - Justifii</title>
+    {% endblock %}
+</head>
+<body class="d-flex flex-column h-100">
+{% include 'layout/_navbar.html' %}
+<main class="flex-shrink-0" role="main">
+    <div class="my-4 container">
+        <header>{% block header %}{% endblock %}</header>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        <div id="content">{% block content %}{% endblock %}</div>
+    </div>
+</main>
+{% include 'layout/_footer.html' %}
+<script src="{{ url_for('static', filename='bundle.js') }}"></script>
+</body>
+</html>

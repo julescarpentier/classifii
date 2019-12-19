@@ -5,8 +5,8 @@ from flask import (
 )
 from werkzeug.security import check_password_hash, generate_password_hash
 
-from webjustif.database import db
-from webjustif.models import User
+from justifii.database import db
+from justifii.models import User
 
 bp = Blueprint('auth', __name__, url_prefix='/auth')
 
@@ -25,6 +25,7 @@ def login_required(view):
     @functools.wraps(view)
     def wrapped_view(**kwargs):
         if g.user is None:
+            flash("Login reguired", 'warning')
             return redirect(url_for('auth.login'))
 
         return view(**kwargs)
@@ -49,9 +50,10 @@ def register():
         if error is None:
             db.session.add(User(username, generate_password_hash(password)))
             db.session.commit()
+            flash("Registering successful", 'success')
             return redirect(url_for('auth.login'))
 
-        flash(error)
+        flash(error, 'danger')
 
     return render_template('auth/register.html')
 
@@ -72,9 +74,10 @@ def login():
         if error is None:
             session.clear()
             session['user_id'] = user.id
+            flash("Login successful", 'success')
             return redirect(url_for('index'))
 
-        flash(error)
+        flash(error, 'danger')
 
     return render_template('auth/login.html')
 
@@ -82,4 +85,5 @@ def login():
 @bp.route('/logout')
 def logout():
     session.clear()
+    flash("Logout successful", 'success')
     return redirect(url_for('index'))

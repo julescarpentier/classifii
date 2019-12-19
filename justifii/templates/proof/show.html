@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block header %}
+    <h1>{% block title %}Show Proof #{{ proof.id }}{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+    <p>
+        {% for token in tokens %}
+            <span class="{% if token in proof.tokens %}highlight{% endif %}">{{ token }}</span>
+        {% endfor %}
+    </p>
+{% endblock %}

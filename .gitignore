@@ -1,5 +1,7 @@
-venv/
-data/
+/venv/
+/data/
+/justifii/node_modules/
+/justifii/static/
 
 *.pyc
 __pycache__/
