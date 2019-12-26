@@ -28,8 +28,8 @@ def create_app(test_config=None):
     from . import database
     database.init_app(app)
 
-    from justifii.blueprints import default
-    app.register_blueprint(default.bp)
+    from justifii.blueprints import dashboard
+    app.register_blueprint(dashboard.bp)
     app.add_url_rule('/', endpoint='index')
 
     from justifii.blueprints import auth
@@ -38,7 +38,7 @@ def create_app(test_config=None):
     from justifii.blueprints import text
     app.register_blueprint(text.bp)
 
-    from justifii.blueprints import proof
-    app.register_blueprint(proof.bp)
+    from justifii.blueprints import rationale
+    app.register_blueprint(rationale.bp)
 
     return app

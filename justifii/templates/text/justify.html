@@ -1,20 +1,20 @@
 {% extends 'base.html' %}
 
-{% block header %}
-    <h1>{% block title %}Justify Text #{{ text.id }}{% endblock %}</h1>
-{% endblock %}
-
 {% block content %}
-    <form method="post">
-        <div class="form-group">
-            {% for i in range(tokens|length) %}
-                <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="checkbox" id="token_{{ i }}" name="tokens[]" value="{{ i }}"
-                           {% if proof.tokens_contain(i) %}checked{% endif %}>
-                    <label class="form-check-label" for="token_{{ i }}">{{ tokens[i] }}</label>
-                </div>
-            {% endfor %}
+    <div class="card mb-3">
+        <div class="card-header">
+            <i class="fas fa-comment"></i>
+            {% block title %}Justify Text #{{ text.id }}{% endblock %}
         </div>
-        <button type="submit" class="btn btn-success">Save</button>
-    </form>
+        <div class="card-body text-justify">
+            <p><span class="font-weight-bold">File path:</span> {{ text.file_path }}</p>
+            <p><span class="font-weight-bold">Label:</span> {{ text.label }}</p>
+            <form method="post">
+                <div class="form-group">
+                    {{ rationale.get_form()|safe }}
+                </div>
+                <button type="submit" class="btn btn-success">Save</button>
+            </form>
+        </div>
+    </div>
 {% endblock %}

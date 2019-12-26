@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block header %}
+    <h1>{% block title %}Show Rationale #{{ rationale.id }}{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+    <p>
+        {% for i in range(tokens|length) %}
+            <span {% if rationale.tokens_contain(i) %}class="font-weight-bold"{% endif %}>{{ tokens[i] }}</span>
+        {% endfor %}
+    </p>
+{% endblock %}
