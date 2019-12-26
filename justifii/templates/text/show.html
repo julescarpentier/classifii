@@ -1,19 +1,26 @@
 {% extends 'base.html' %}
 
-{% block header %}
-    <h1>{% block title %}Show Text #{{ text.id }}{% endblock %}</h1>
-{% endblock %}
-
 {% block content %}
-    {% for proof in proofs %}
-        <p>
-            {% for i in range(tokens|length) %}
-                <span {% if proof.tokens_contain(i) %}class="highlight"{% endif %}>{{ tokens[i] }}</span>
-            {% endfor %}
-        </p>
-    {% else %}
-        {% for token in tokens %}
-            <span>{{ token }}</span>
-        {% endfor %}
+    <div class="card mb-3">
+        <div class="card-header">
+            <i class="fas fa-file-alt"></i>
+            {% block title %}Text #{{ text.id }}{% endblock %}
+        </div>
+        <div class="card-body">
+            <p><span class="font-weight-bold">File path:</span> {{ text.file_path }}</p>
+            <p><span class="font-weight-bold">Label:</span> {{ text.label }}</p>
+        </div>
+    </div>
+    {% for rationale in text.rationales %}
+        <div class="card mb-3">
+            <div class="card-header">
+                <i class="fas fa-comment"></i>
+                Rationale #{{ rationale.id }}
+            </div>
+            <div class="card-body text-justify">
+                {{ rationale.get_show()|safe }}
+            </div>
+            <div class="card-footer small text-muted">Created by {{ rationale.user }}</div>
+        </div>
     {% endfor %}
 {% endblock %}

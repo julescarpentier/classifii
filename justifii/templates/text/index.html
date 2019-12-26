@@ -1,36 +1,47 @@
 {% extends 'base.html' %}
 
-{% block header %}
-    <h1>{% block title %}Texts{% endblock %}</h1>
-{% endblock %}
-
 {% block content %}
-    <table class="table table-striped">
-        <thead>
-        <tr>
-            <th scope="col">#</th>
-            <th scope="col">File Path</th>
-            <th scope="col">Label</th>
-            <th scope="col">Actions</th>
-        </tr>
-        </thead>
-        <tbody>
-        {% for text in texts %}
-            <tr>
-                <th scope="row">{{ text.id }}</th>
-                <td>{{ text.file_path }}</td>
-                <td>{{ text.label }}</td>
-                <td>
-                    <a class="btn btn-sm btn-primary" href="{{ url_for('text.show', text_id=text.id) }}">show</a>
-                    <a class="btn btn-sm btn-secondary"
-                       href="{{ url_for('text.justify', text_id=text.id) }}">justify</a>
-                </td>
-            </tr>
-        {% else %}
-            <tr>
-                <td colspan="4" class="text-center">Nothing to show here...</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+    <div class="card mb-3">
+        <div class="card-header">
+            <i class="fas fa-table"></i>
+            {% block title %}Texts{% endblock %}
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                    <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">File Path</th>
+                        <th scope="col">Label</th>
+                        <th scope="col">Actions</th>
+                    </tr>
+                    </thead>
+                    <tfoot>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">File Path</th>
+                        <th scope="col">Label</th>
+                        <th scope="col">Actions</th>
+                    </tr>
+                    </tfoot>
+                    <tbody>
+                    {% for text in texts %}
+                        <tr>
+                            <th scope="row">{{ text.id }}</th>
+                            <td>{{ text.file_path }}</td>
+                            <td>{{ text.label }}</td>
+                            <td>
+                                <a class="btn btn-sm btn-primary"
+                                   href="{{ url_for('text.show', text_id=text.id) }}">show</a>
+                                <a class="btn btn-sm btn-secondary"
+                                   href="{{ url_for('text.justify', text_id=text.id) }}">justify</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 {% endblock %}

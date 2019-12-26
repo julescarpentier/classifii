@@ -4,7 +4,7 @@ from flask import (
 
 from justifii.blueprints.auth import login_required
 from justifii.database import db
-from justifii.models import Proof, Text
+from justifii.models import Rationale, Text
 
 bp = Blueprint('text', __name__, url_prefix='/text')
 
@@ -20,14 +20,14 @@ def get_text(text_id):
 
 @bp.route('/')
 def index():
-    return render_template('text/index.html', texts=Text.query.limit(100).all())
+    return render_template('text/index.html', texts=Text.query.all())
 
 
 @bp.route('/<int:text_id>')
 def show(text_id):
     text = get_text(text_id)
 
-    return render_template('text/show.html', text=text, proofs=text.proofs, tokens=text.get_tokens())
+    return render_template('text/show.html', text=text)
 
 
 @bp.route('/<int:text_id>/justify', methods=('GET', 'POST'))
@@ -35,9 +35,13 @@ def show(text_id):
 def justify(text_id):
     text = get_text(text_id)
 
-    existing_proof = Proof.query.filter_by(user_id=g.user.id, text_id=text_id).first()
-    new = existing_proof is None
-    proof = existing_proof or Proof()
+    existing_rationale = Rationale.query.filter_by(user_id=g.user.id, text_id=text_id).first()
+    new = existing_rationale is None
+    rationale = existing_rationale or Rationale()
+
+    if new:
+        rationale.user = g.user
+        rationale.text = text
 
     if request.method == 'POST':
         tokens = request.form.getlist('tokens[]')
@@ -49,12 +53,10 @@ def justify(text_id):
         if error is not None:
             flash(error, 'danger')
         else:
-            proof.tokens = tokens
+            rationale.tokens = tokens
             if new:
-                proof.user = g.user
-                proof.text = text
-                db.session.add(proof)
+                db.session.add(rationale)
             db.session.commit()
             return redirect(url_for('text.show', text_id=text_id))
 
-    return render_template('text/justify.html', text=text, proof=proof, tokens=text.get_tokens())
+    return render_template('text/justify.html', text=text, rationale=rationale)

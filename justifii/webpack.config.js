@@ -1,33 +1,58 @@
+const webpack = require('webpack');
 const path = require('path');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 module.exports = {
     mode: "development",
     entry: "./assets/js/app.js",
     output: {
         path: path.resolve(__dirname, "static"),
-        filename: "bundle.js",
+        filename: "script.js",
     },
     module: {
         rules: [
             {
-                test: /\.(scss)$/,
-                use: [{
-                    loader: 'style-loader', // inject CSS to page
-                }, {
-                    loader: 'css-loader', // translates CSS into CommonJS modules
-                }, {
-                    loader: 'postcss-loader', // Run postcss actions
-                    options: {
-                        plugins: function () { // postcss plugins, can be exported to postcss.config.js
-                            return [
-                                require('autoprefixer')
-                            ];
+                test: /\.scss$/,
+                use: [
+                    MiniCssExtractPlugin.loader,
+                    'css-loader',
+                    {
+                        loader: 'postcss-loader',
+                        options: {
+                            plugins: function () {
+                                return [
+                                    require('autoprefixer')
+                                ];
+                            }
                         }
-                    }
-                }, {
-                    loader: 'sass-loader' // compiles Sass to CSS
-                }]
+                    },
+                    'sass-loader',
+                ],
+            },
+            {
+                test: /.(ttf|otf|eot|svg|woff(2)?)(\?[a-z0-9]+)?$/,
+                use: [
+                    {
+                        loader: 'file-loader',
+                        options: {
+                            name: '[name].[ext]',
+                            outputPath: "fonts",
+                        }
+                    },
+                ]
             }
         ]
-    }
-};
+    },
+    plugins: [
+        new MiniCssExtractPlugin({
+            filename: "style.css"
+        }),
+        new webpack.ProvidePlugin({
+            $: 'jquery',
+            jQuery: 'jquery',
+            'window.jQuery': 'jquery',
+            'window.$': 'jquery',
+        })
+    ]
+}
+;

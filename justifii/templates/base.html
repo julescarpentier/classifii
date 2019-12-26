@@ -1,32 +1,84 @@
 <!DOCTYPE html>
-<html class="h-100" lang="en">
+<html lang="en">
+
 <head>
     {% block head %}
         <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <meta name="description" content="">
+        <meta name="author" content="">
+
         <title>{% block title %}{% endblock %} - Justifii</title>
+
+        <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     {% endblock %}
 </head>
-<body class="d-flex flex-column h-100">
-{% include 'layout/_navbar.html' %}
-<main class="flex-shrink-0" role="main">
-    <div class="my-4 container">
-        <header>{% block header %}{% endblock %}</header>
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                {% for category, message in messages %}
-                    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
-                        {{ message }}
-                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
-        <div id="content">{% block content %}{% endblock %}</div>
+
+<body id="page-top">
+
+{% block navbar %}
+    {% include 'layout/_navbar.html' %}
+{% endblock %}
+
+<div id="wrapper">
+
+    {% block sidebar %}
+        {% include 'layout/_sidebar.html' %}
+    {% endblock %}
+
+    <div id="content-wrapper">
+        <div class="container-fluid">
+            <header>{% block header %}{% endblock %}</header>
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            {% block content %}{% endblock %}
+        </div>
+
+        {% block footer %}
+            {% include 'layout/_footer.html' %}
+        {% endblock %}
     </div>
-</main>
-{% include 'layout/_footer.html' %}
-<script src="{{ url_for('static', filename='bundle.js') }}"></script>
+</div>
+
+<!-- Scroll to Top Button-->
+<a class="scroll-to-top rounded" href="#page-top">
+    <i class="fas fa-angle-up"></i>
+</a>
+
+<!-- Logout Modal-->
+<div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
+                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+                <a class="btn btn-primary" href="{{ url_for('auth.logout') }}">Logout</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block scripts %}
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+{% endblock %}
+
 </body>
 </html>
