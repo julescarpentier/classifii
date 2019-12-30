@@ -42,7 +42,7 @@ def create_fully_cnn_model(len_word_index, embedding_dim, embedding_matrix, inpu
 
     model = Model(inputs=sequence_input, outputs=[last_layer_output, cam])
 
-    def loss2(y_true, y_pred): # fonction de perte à définir
+    def loss2(y_true, y_pred):  # fonction de perte à définir
         return 0
 
     model.compile(optimizer='adam',

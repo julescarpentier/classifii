@@ -1,3 +1,5 @@
+import sys
+
 from tensorflow.keras.preprocessing.text import text_to_word_sequence
 
 from justifii.database import db
@@ -23,24 +25,48 @@ class User(db.Model):
 
 class Text(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    file_path = db.Column(db.String(120), unique=True, nullable=False)
-    label = db.Column(db.String(80), nullable=False)
+    fpath = db.Column(db.String(120), unique=True, nullable=False)
 
+    label_id = db.Column(db.Integer, db.ForeignKey('label.id'), nullable=False)
     rationales = db.relationship('Rationale', backref='text', lazy=True)
 
-    def __init__(self, file_path=None, label=None):
-        self.file_path = file_path
-        self.label = label
+    def __init__(self, fpath=None, label_id=None):
+        self.fpath = fpath
+        self.label_id = label_id
 
     def __repr__(self):
-        return '<Text id={}, file_path={}, label={}>'.format(self.id, self.file_path, self.label)
+        return '<Text id={}, fpath={}, label={}, label_id={}>'.format(self.id, self.fpath, self.label, self.label_id)
 
     def __str__(self):
-        return '<Text id={}, file_path={}, label={}>'.format(self.id, self.file_path, self.label)
+        return self.__repr__()
 
-    def get_keras_tokens(self):
-        with open(self.file_path) as f:
-            return text_to_word_sequence(f.read(), lower=False)
+    def get_content(self):
+        args = {} if sys.version_info < (3,) else {'encoding': 'latin-1'}
+        with open(self.fpath, **args) as f:
+            t = f.read()
+            i = t.find('\n\n')  # skip header
+            if 0 < i:
+                t = t[i:]
+            return t
+
+    def get_word_sequence(self):
+        return text_to_word_sequence(self.get_content(), lower=False)
+
+
+class Label(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(80), unique=True, nullable=False)
+
+    texts = db.relationship('Text', backref='label', lazy=True)
+
+    def __init__(self, name=None):
+        self.name = name
+
+    def __repr__(self):
+        return '<Label id={}, name={}>'.format(self.id, self.name)
+
+    def __str__(self):
+        return self.name
 
 
 class Rationale(db.Model):
@@ -57,63 +83,55 @@ class Rationale(db.Model):
         return '<Rationale id={}, user={}>'.format(self.id, self.user)
 
     def __str__(self):
-        return '<Rationale id={}, user={}>'.format(self.id, self.user)
+        return self.__repr__()
 
-    def tokens_contain(self, i):
-        if self.tokens is None:
-            return False
+    def __contains__(self, item):
+        if self.tokens is not None:
+            return item in self.tokens
 
-        return str(i) in self.tokens
+        return False
 
     def get_show(self):
-        with open(self.text.file_path) as f:
-            content = f.read()
-            tokens = self.text.get_keras_tokens()
-            html = ""
-            i = 0
-            j = 0
-            while i < len(content):
-                if j < len(tokens):
-                    if content[i:i + len(tokens[j])] == tokens[j]:
-                        if self.tokens_contain(j):
-                            html += '<span class="font-weight-bold">' + tokens[j] + '</span>'
-                        else:
-                            html += tokens[j]
-                        i += len(tokens[j])
-                        j += 1
-                    else:
-                        html += content[i]
-                        i += 1
-                else:
-                    html += content[i]
-                    i += 1
+        text = self.text.get_content()
+        word_sequence = self.text.get_word_sequence()
 
-            return html
+        html = ""
+        i = 0
+        j = 0
+        while i < len(text):
+            if j < len(word_sequence) and text[i:i + len(word_sequence[j])] == word_sequence[j]:
+                if j in self:
+                    html += '<span class="font-weight-bold">' + word_sequence[j] + '</span>'
+                else:
+                    html += word_sequence[j]
+                i += len(word_sequence[j])
+                j += 1
+            else:
+                html += text[i]
+                i += 1
+
+        return html
 
     def get_form(self):
-        with open(self.text.file_path) as f:
-            content = f.read()
-            tokens = self.text.get_keras_tokens()
-            html = ""
-            i = 0
-            j = 0
-            while i < len(content):
-                if j < len(tokens):
-                    if content[i:i + len(tokens[j])] == tokens[j]:
-                        html += '<div class="form-check form-check-inline mr-0">'
-                        html += '<input class="form-check-input check-with-label d-none" type="checkbox" ' \
-                                'id="token_{}" name="tokens[]" value="{}"{}>' \
-                            .format(j, j, " checked" if self.tokens_contain(j) else "")
-                        html += '<label class="form-check-label label-for-check" for="token_{}">{}</label>' \
-                            .format(j, tokens[j])
-                        html += '</div>'
-                        i += len(tokens[j])
-                        j += 1
-                    else:
-                        html += content[i]
-                        i += 1
-                else:
-                    html += content[i]
-                    i += 1
+        text = self.text.get_content()
+        word_sequence = self.text.get_word_sequence()
 
-            return html
+        html = ""
+        i = 0
+        j = 0
+        while i < len(text):
+            if j < len(word_sequence) and text[i:i + len(word_sequence[j])] == word_sequence[j]:
+                html += '<div class="form-check form-check-inline mr-0">'
+                html += '<input class="form-check-input check-with-label d-none" type="checkbox" ' \
+                        'id="token_{}" name="tokens[]" value="{}"{}>' \
+                    .format(j, j, " checked" if j in self else "")
+                html += '<label class="form-check-label label-for-check" for="token_{}">{}</label>' \
+                    .format(j, word_sequence[j])
+                html += '</div>'
+                i += len(word_sequence[j])
+                j += 1
+            else:
+                html += text[i]
+                i += 1
+
+        return html

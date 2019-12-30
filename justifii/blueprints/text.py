@@ -53,7 +53,7 @@ def justify(text_id):
         if error is not None:
             flash(error, 'danger')
         else:
-            rationale.tokens = tokens
+            rationale.tokens = [int(token) for token in tokens]
             if new:
                 db.session.add(rationale)
             db.session.commit()

@@ -1,8 +1,8 @@
+import os
+
 import click
 from flask.cli import with_appcontext
 from flask_sqlalchemy import SQLAlchemy
-from os import listdir
-from os.path import isdir, isfile, join
 
 db = SQLAlchemy()
 
@@ -11,25 +11,32 @@ db = SQLAlchemy()
 @with_appcontext
 def init_db_command():
     """Clear the existing data and create new tables."""
-    from justifii.models import Text
+    from justifii.models import Text, Label
 
     db.drop_all()
+    click.echo('Dropped all tables.')
     db.create_all()
-    click.echo('Created tables.')
+    click.echo('Created all tables.')
 
-    dataset_path = 'data/20news-18828'
+    base_dir = 'data'
+    text_data_dir = os.path.join(base_dir, '20news-18828')
 
-    for label in listdir(dataset_path):
-        label_path = join(dataset_path, label)
-        if isdir(label_path):
-            for file in listdir(label_path):
-                file_path = join(label_path, file)
-                if isfile(file_path):
-                    text = Text(file_path, label)
+    click.echo('Processing text dataset.')
+
+    for name in sorted(os.listdir(text_data_dir)):
+        path = os.path.join(text_data_dir, name)
+        if os.path.isdir(path):
+            label = Label(name)
+            db.session.add(label)
+            db.session.commit()
+            for fname in sorted(os.listdir(path)):
+                if fname.isdigit():
+                    fpath = os.path.join(path, fname)
+                    text = Text(fpath, label.id)
                     db.session.add(text)
-
     db.session.commit()
-    click.echo('Populated tables.')
+
+    click.echo('Found {} texts.'.format(Text.query.count()))
 
 
 def init_app(app):

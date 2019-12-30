@@ -1,13 +1,14 @@
 {% extends 'base.html' %}
 
-{% block header %}
-    <h1>{% block title %}Show Rationale #{{ rationale.id }}{% endblock %}</h1>
-{% endblock %}
-
 {% block content %}
-    <p>
-        {% for i in range(tokens|length) %}
-            <span {% if rationale.tokens_contain(i) %}class="font-weight-bold"{% endif %}>{{ tokens[i] }}</span>
-        {% endfor %}
-    </p>
+    <div class="card mb-3">
+            <div class="card-header">
+                <i class="fas fa-comment"></i>
+                {% block title %}Rationale #{{ rationale.id }}{% endblock %}
+            </div>
+            <div class="card-body text-justify">
+                {{ rationale.get_show()|safe }}
+            </div>
+            <div class="card-footer small text-muted">Created by {{ rationale.user }}</div>
+        </div>
 {% endblock %}

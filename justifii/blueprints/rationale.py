@@ -30,7 +30,7 @@ def index():
 def show(rationale_id):
     rationale = get_rationale(rationale_id, check_owner=False)
 
-    return render_template('rationale/show.html', rationale=rationale, tokens=rationale.text.get_tokens())
+    return render_template('rationale/show.html', rationale=rationale, tokens=rationale.text.get_word_sequence())
 
 
 @bp.route('/<int:rationale_id>/delete', methods=('POST',))

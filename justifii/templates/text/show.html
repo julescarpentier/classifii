@@ -7,7 +7,7 @@
             {% block title %}Text #{{ text.id }}{% endblock %}
         </div>
         <div class="card-body">
-            <p><span class="font-weight-bold">File path:</span> {{ text.file_path }}</p>
+            <p><span class="font-weight-bold">File path:</span> {{ text.fpath }}</p>
             <p><span class="font-weight-bold">Label:</span> {{ text.label }}</p>
         </div>
     </div>
@@ -21,6 +21,16 @@
                 {{ rationale.get_show()|safe }}
             </div>
             <div class="card-footer small text-muted">Created by {{ rationale.user }}</div>
+        </div>
+    {% else %}
+        <div class="card mb-3">
+            <div class="card-header">
+                <i class="fas fa-align-justify"></i>
+                Raw content
+            </div>
+            <div class="card-body text-justify">
+                {{ text.get_content() }}
+            </div>
         </div>
     {% endfor %}
 {% endblock %}

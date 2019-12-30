@@ -38,12 +38,15 @@ def register():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
+        confirm_password = request.form['confirm_password']
         error = None
 
         if not username:
             error = 'Username is required.'
         elif not password:
             error = 'Password is required.'
+        elif password != confirm_password:
+            error = 'Passwords aren\'t identical'
         elif User.query.filter_by(username=username).first() is not None:
             error = 'User {} is already registered.'.format(username)
 
