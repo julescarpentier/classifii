@@ -101,7 +101,7 @@ class Rationale(db.Model):
         while i < len(text):
             if j < len(word_sequence) and text[i:i + len(word_sequence[j])] == word_sequence[j]:
                 if j in self:
-                    html += '<span class="font-weight-bold">' + word_sequence[j] + '</span>'
+                    html += '<span style="background-color: rgb(253, 126, 20);">' + word_sequence[j] + '</span>'
                 else:
                     html += word_sequence[j]
                 i += len(word_sequence[j])
