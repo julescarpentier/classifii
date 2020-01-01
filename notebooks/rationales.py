@@ -71,7 +71,7 @@ print('Training model.')
 
 model = fully_conv_rationales.get_compiled_model(embedding_layer, MAX_SEQUENCE_LENGTH, len(labels_index))
 
-history = model.fit(x_train, (y_train, r_train), batch_size=128, epochs=10, validation_data=(x_val, (y_val, r_val)))
+history = model.fit(x_train, [y_train, r_train], batch_size=128, epochs=10, validation_data=(x_val, [y_val, r_val]))
 
 # ensure the output folder exists
 try:
