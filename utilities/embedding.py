@@ -13,7 +13,7 @@ def get_embeddings_index():
     print('Indexing word vectors.')
 
     embeddings_index = {}
-    with open(os.path.join(GLOVE_DIR, 'glove.6B.' + str(EMBEDDING_DIM) + 'd.txt')) as f:
+    with open(os.path.join(GLOVE_DIR, 'glove.6B.' + str(EMBEDDING_DIM) + 'd.txt'), encoding='utf-8') as f:
         for line in f:
             word, coefs = line.split(maxsplit=1)
             coefs = np.fromstring(coefs, 'f', sep=' ')
