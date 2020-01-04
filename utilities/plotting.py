@@ -73,7 +73,7 @@ def plot_compare_loss(fpath, legend, *histories):
     for history in histories:
         plt.plot(history.history['val_loss'], '--')
     plt.title('Compared losses (plain: train - dashed: validation)')
-    plt.ylabel('Accuracy')
+    plt.ylabel('Loss')
     plt.xlabel('Epoch')
     plt.legend(legend * 2, loc='upper left')
     plt.savefig(fpath)

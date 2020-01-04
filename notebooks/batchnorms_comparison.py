@@ -8,7 +8,7 @@ from tensorflow.keras.preprocessing.sequence import pad_sequences
 from tensorflow.keras.preprocessing.text import Tokenizer
 from tensorflow.keras.utils import to_categorical
 
-from models import fully_conv_batchnorm, fully_conv_batchnorm_after_activation
+from models import fully_conv_batchnorm_1, fully_conv_batchnorm_2, fully_conv_batchnorm_3
 from utilities.dataset import get_texts_labels
 from utilities.embedding import get_pre_trained_embedding_layer, get_embedding_matrix
 from utilities.plotting import plot_compare_acc, plot_compare_loss
@@ -63,19 +63,17 @@ embedding_layer = get_pre_trained_embedding_layer(num_words, embedding_matrix, M
 
 print('Training models.')
 
-batchnorm_before_activation_model = fully_conv_batchnorm.get_compiled_model(embedding_layer, MAX_SEQUENCE_LENGTH,
-                                                                            len(labels_index))
-batchnorm_after_activation_model = fully_conv_batchnorm_after_activation.get_compiled_model(embedding_layer,
-                                                                                            MAX_SEQUENCE_LENGTH,
-                                                                                            len(labels_index))
+batchnorm_1_model = fully_conv_batchnorm_1.get_compiled_model(embedding_layer, MAX_SEQUENCE_LENGTH, len(labels_index))
+batchnorm_2_model = fully_conv_batchnorm_2.get_compiled_model(embedding_layer, MAX_SEQUENCE_LENGTH, len(labels_index))
+batchnorm_3_model = fully_conv_batchnorm_3.get_compiled_model(embedding_layer, MAX_SEQUENCE_LENGTH, len(labels_index))
 
-batchnorm_before_activation_model.summary()
-batchnorm_after_activation_model.summary()
+batchnorm_1_model.summary()
+batchnorm_2_model.summary()
+batchnorm_3_model.summary()
 
-batchnorm_before_activation_history = batchnorm_before_activation_model.fit(x_train, y_train, batch_size=128, epochs=15,
-                                                                            validation_data=(x_val, y_val))
-batchnorm_after_activation_history = batchnorm_after_activation_model.fit(x_train, y_train, batch_size=128, epochs=15,
-                                                                          validation_data=(x_val, y_val))
+batchnorm_1_history = batchnorm_1_model.fit(x_train, y_train, batch_size=128, epochs=20, validation_data=(x_val, y_val))
+batchnorm_2_history = batchnorm_2_model.fit(x_train, y_train, batch_size=128, epochs=20, validation_data=(x_val, y_val))
+batchnorm_3_history = batchnorm_3_model.fit(x_train, y_train, batch_size=128, epochs=20, validation_data=(x_val, y_val))
 
 # ensure the output folder exists
 try:
@@ -84,11 +82,9 @@ except OSError:
     pass
 
 # Plot batchnorm before/after activation accuracies
-plot_compare_acc('./output/batchnorm_before_after_activation_comparison_acc.png',
-                 ['BatchNorm_before_activ', 'BatchNorm_after_activ'], batchnorm_before_activation_history,
-                 batchnorm_after_activation_history)
+plot_compare_acc('./output/batchnorms_comparison_acc.png', ['BatchNorm 1', 'BatchNorm 2', 'BatchNorm 3'],
+                 batchnorm_1_history, batchnorm_2_history, batchnorm_3_history)
 
 # Plot batchnorm before/after activation losses
-plot_compare_loss('./output/batchnorm_before_after_activation_comparison_loss.png',
-                  ['BatchNorm_before_activ', 'BatchNorm_after_activ'], batchnorm_before_activation_history,
-                  batchnorm_after_activation_history)
+plot_compare_loss('./output/batchnorms_comparison_loss.png', ['BatchNorm 1', 'BatchNorm 2', 'BatchNorm 3'],
+                  batchnorm_1_history, batchnorm_2_history, batchnorm_3_history)

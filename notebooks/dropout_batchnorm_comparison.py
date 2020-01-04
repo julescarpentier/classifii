@@ -8,7 +8,7 @@ from tensorflow.keras.preprocessing.sequence import pad_sequences
 from tensorflow.keras.preprocessing.text import Tokenizer
 from tensorflow.keras.utils import to_categorical
 
-from models import fully_conv_control, fully_conv_dropout, fully_conv_spatial_dropout, fully_conv_batchnorm
+from models import fully_conv_control, fully_conv_dropout, fully_conv_spatial_dropout, fully_conv_batchnorm_before_act
 from utilities.dataset import get_texts_labels
 from utilities.embedding import get_pre_trained_embedding_layer, get_embedding_matrix
 from utilities.plotting import plot_compare_acc, plot_compare_loss
@@ -67,7 +67,7 @@ control_model = fully_conv_control.get_compiled_model(embedding_layer, MAX_SEQUE
 dropout_model = fully_conv_dropout.get_compiled_model(embedding_layer, MAX_SEQUENCE_LENGTH, len(labels_index))
 spatial_dropout_model = fully_conv_spatial_dropout.get_compiled_model(embedding_layer, MAX_SEQUENCE_LENGTH,
                                                                       len(labels_index))
-batchnorm_model = fully_conv_batchnorm.get_compiled_model(embedding_layer, MAX_SEQUENCE_LENGTH, len(labels_index))
+batchnorm_model = fully_conv_batchnorm_before_act.get_compiled_model(embedding_layer, MAX_SEQUENCE_LENGTH, len(labels_index))
 
 control_model.summary()
 dropout_model.summary()
