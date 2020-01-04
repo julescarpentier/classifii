@@ -18,23 +18,25 @@ def cam_einsum(x, w):
 def get_model(embedding_layer, max_sequence_length, nb_labels):
     sequence_input = Input(shape=(max_sequence_length,), dtype='int32', name='sequence')
     embedded_sequence = embedding_layer(sequence_input)
-    x = Conv1D(128, 5, padding='same')(embedded_sequence)
-    x = BatchNormalization()(x)
-    x = Activation('relu')(x)
-    x = Conv1D(128, 5, padding='same')(x)
-    x = BatchNormalization()(x)
-    x = Activation('relu')(x)
-    x = Conv1D(128, 5, padding='same')(x)
-    x = BatchNormalization()(x)
-    f = Activation('relu')(x)
 
-    x = GlobalAveragePooling1D()(f)
+    l_conv1 = Conv1D(128, 5, activation='relu', padding='same')(embedded_sequence)
+    l_batch1 = BatchNormalization()(l_conv1)
+    l_conv2 = Conv1D(128, 5, activation='relu', padding='same')(l_batch1)
+    l_batch2 = BatchNormalization()(l_conv2)
+    last_conv = Conv1D(128, 5, activation='relu', padding='same')(l_batch2)
+    # last_batch = BatchNormalization()(last_conv) ?
+    l_gap = GlobalAveragePooling1D()(last_conv)
     softmax_layer = Dense(nb_labels, activation='softmax', name='topic')
-    topic_pred = softmax_layer(x)
+    last_layer_output = softmax_layer(l_gap)
 
-    cam = Lambda(cam_einsum, arguments={'w': softmax_layer.kernel}, name='cam')(f)
+    # CAM
+    w = softmax_layer.kernel
+    cam = cam_einsum(last_conv, w)
 
-    model = Model(inputs=sequence_input, outputs=[topic_pred, cam], name='fully_conv_rationales')
+    # Matrice de justificatifs test (débuggage), on s'est arrêté là avant les vacs
+    # zeros_matrix = np.zeros.zeros.zeros((32, 20, input_length))
+
+    model = Model(inputs=sequence_input, outputs=[last_layer_output, cam], name='fully_conv_rationales')
 
     # if not path.exists(IMAGE_PATH):
     #     plot_model(model, to_file=IMAGE_PATH, show_shapes=True)

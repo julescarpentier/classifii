@@ -8,6 +8,7 @@ from models.embedding_model import *
 from keras.preprocessing.text import Tokenizer
 from keras.preprocessing.sequence import pad_sequences
 from keras.utils.np_utils import to_categorical
+from keras.models import load_model
 
 VALIDATION_SPLIT = 0.3
 TRAINING_SPLIT = 1 - VALIDATION_SPLIT
@@ -25,6 +26,7 @@ print(df_train)
 
 # TEXTS TO TOKENIZE INTO INTEGERS (or to do in data_parsing)
 texts = df_train['text'].to_numpy()
+# NUM WORDS PEUT ETRE INUTILE ? A VOIR
 tokenizer = Tokenizer(num_words=MAX_NB_WORDS)
 # fit_on_texts(texts) creates the vocabulary index based on word frequency (word_index dictionary)
 tokenizer.fit_on_texts(texts)
@@ -33,7 +35,7 @@ print('Number of unique tokens: %s' % len(word_index))
 # Transforms each text in texts to a sequence of integers, based on the word_index dictionary
 sequences = tokenizer.texts_to_sequences(texts)
 # padding (pre-padding i.e 0 before)
-data = pad_sequences(sequences, maxlen=MAX_LENGTH_SEQUENCE)
+data = pad_sequences(sequences, maxlen=MAX_LENGTH_SEQUENCE, padding='post')
 
 # LABELS
 targets = df_train['target'].to_numpy()
@@ -91,15 +93,58 @@ for word, i in word_index.items():
 # print("TRAINING MODEL WITHOUT EMBEDDED TEXT")
 # history_1 = random_embedding_model.fit(x_train, y_train, validation_data=(x_test, y_test), epochs=5, batch_size=32)
 
-# EMBEDDING MODEL
-print("EMBEDDING MODEL")
-embedding_model = create_embedding_model(len(word_index), EMBEDDING_DIM, embedding_matrix, MAX_LENGTH_SEQUENCE)
+# EMBEDDING MODEL WITH 1 CONV1D LAYER
+print("1 CONV1D LAYER EMBEDDING MODEL")
+embedding_model = create_embedding_model(len(word_index), EMBEDDING_DIM, embedding_matrix, MAX_LENGTH_SEQUENCE, 1)
 print(embedding_model.summary())
 
 # TRAINING THE EMBEDDING MODEL
 print("TRAINING EMBEDDING MODEL")
-history_2 = embedding_model.fit(x_train, y_train, validation_data=(x_test, y_test), epochs=8, batch_size=32)
+history_1_layer = embedding_model.fit(x_train, y_train, validation_data=(x_test, y_test), epochs=20, batch_size=32)
 
+# evaluate the model
+scores = embedding_model.evaluate(x_test, y_test, verbose=1)
+print("%s: %.2f%%" % (embedding_model.metrics_names[1], scores[1]*100))
+
+# save model and architecture to single file
+embedding_model.save("model_1_conv1d_layer.h5")
+print("Saved model to disk")
+
+
+# EMBEDDING MODEL WITH 3 CONV1D LAYER
+print("3 CONV1D LAYER EMBEDDING MODEL")
+embedding_model = create_embedding_model(len(word_index), EMBEDDING_DIM, embedding_matrix, MAX_LENGTH_SEQUENCE, 3)
+print(embedding_model.summary())
+
+# TRAINING THE EMBEDDING MODEL
+print("TRAINING EMBEDDING MODEL")
+history_3_layer = embedding_model.fit(x_train, y_train, validation_data=(x_test, y_test), epochs=20, batch_size=32)
+
+# evaluate the model
+scores = embedding_model.evaluate(x_test, y_test, verbose=1)
+print("%s: %.2f%%" % (embedding_model.metrics_names[1], scores[1]*100))
+
+# save model and architecture to single file
+embedding_model.save("model_3_conv1d_layer.h5")
+print("Saved model to disk")
+
+
+# EMBEDDING MODEL WITH 5 CONV1D LAYER
+print("5 CONV1D LAYER EMBEDDING MODEL")
+embedding_model = create_embedding_model(len(word_index), EMBEDDING_DIM, embedding_matrix, MAX_LENGTH_SEQUENCE, 5)
+print(embedding_model.summary())
+
+# TRAINING THE EMBEDDING MODEL
+print("TRAINING EMBEDDING MODEL")
+history_5_layer = embedding_model.fit(x_train, y_train, validation_data=(x_test, y_test), epochs=20, batch_size=32)
+
+# evaluate the model
+scores = embedding_model.evaluate(x_test, y_test, verbose=1)
+print("%s: %.2f%%" % (embedding_model.metrics_names[1], scores[1]*100))
+
+# save model and architecture to single file
+embedding_model.save("model_5_conv1d_layer.h5")
+print("Saved model to disk")
 
 # summarize history for accuracy
 def plot_history(history):
@@ -120,15 +165,17 @@ def plot_history(history):
     plt.show()
 
 
-def compare_history(history_1, history_2):
+def compare_history(history_1, history_2, history_3):
     plt.plot(history_1.history['accuracy'])
     plt.plot(history_1.history['val_accuracy'])
     plt.plot(history_2.history['accuracy'])
     plt.plot(history_2.history['val_accuracy'])
+    plt.plot(history_3.history['accuracy'])
+    plt.plot(history_3.history['val_accuracy'])
     plt.title('model accuracy')
     plt.ylabel('accuracy')
     plt.xlabel('epoch')
-    plt.legend(['train_no_embedding', 'test_no_embedding', 'train_with_embedding', 'test_with_embedding'],
+    plt.legend(['train_1', 'test_1', 'train_3', 'test_3', 'train_5', 'test_5'],
                loc='upper left')
     plt.show()
     # summarize history for loss
@@ -136,17 +183,19 @@ def compare_history(history_1, history_2):
     plt.plot(history_1.history['val_loss'])
     plt.plot(history_2.history['loss'])
     plt.plot(history_2.history['val_loss'])
+    plt.plot(history_3.history['loss'])
+    plt.plot(history_3.history['val_loss'])
     plt.title('model loss')
     plt.ylabel('loss')
     plt.xlabel('epoch')
-    plt.legend(['train_no_embedding', 'test_no_embedding', 'train_with_embedding', 'test_with_embedding'],
+    plt.legend(['train_1', 'test_1', 'train_3', 'test_3', 'train_5', 'test_5'],
                loc='upper left')
     plt.show()
 
 
 # plot_history(history_1)
-plot_history(history_2)
-# compare_history(history_1, history_2)
+# plot_history(history_2)
+# compare_history(history_1_layer, history_3_layer, history_5_layer)
 
 # RESULTATS ACTUELS (modèle très simple: embeddingLayer-conv1D-Dense-Dense. Les batchs sont mélangés à chaque nouvelle époque)
 # 2 labels (atheism vs comp.graphics) : précision 95% au bout de 2 époques

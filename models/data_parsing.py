@@ -11,7 +11,7 @@ labels = [
     'comp.os.ms-windows.misc',
     'comp.sys.ibm.pc.hardware',
     'comp.sys.mac.hardware',
-    # 'comp.windows.x',
+    'comp.windows.x',
     # 'misc.forsale',
     # 'rec.autos',
     # 'rec.motorcycles',
