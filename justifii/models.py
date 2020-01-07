@@ -1,6 +1,9 @@
 import sys
 
+import numpy as np
+
 from tensorflow.keras.preprocessing.text import text_to_word_sequence
+from tensorflow.keras.preprocessing.sequence import pad_sequences
 
 from justifii.database import db
 
@@ -90,6 +93,15 @@ class Rationale(db.Model):
             return item in self.tokens
 
         return False
+
+    def get_r(self, nb_labels=Label.query().count()):
+        label_id = self.text.label.id - 1
+        word_sequence = self.text.get_word_sequence()
+        r = np.zeros((nb_labels, len(word_sequence)))
+        for token in self.tokens:
+            r[label_id][token] = 1
+
+        return pad_sequences(r, maxlen=1000)
 
     def get_show(self):
         text = self.text.get_content()

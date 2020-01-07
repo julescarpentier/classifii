@@ -3,7 +3,6 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 from os import path
 
 import tensorflow as tf
-from tensorflow.keras.backend import cast_to_floatx
 from tensorflow.keras.layers import Dense, Conv1D, Input, BatchNormalization, GlobalAveragePooling1D, Lambda, Dropout
 from tensorflow.keras.models import Model
 from tensorflow.keras.utils import plot_model
@@ -47,4 +46,8 @@ def get_compiled_model(embedding_layer, max_sequence_length, nb_labels):
 
 
 def rationale_loss(r_true, r_pred):
-    return cast_to_floatx(0)
+    # label_id = tf.argmax(tf.reduce_sum(r_true, axis=2))
+
+    loss = tf.reduce_sum(r_true * (r_true - tf.sigmoid(r_pred)))
+
+    return loss

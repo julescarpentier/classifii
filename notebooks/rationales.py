@@ -4,6 +4,7 @@ import os
 
 import numpy as np
 import tensorflow as tf
+from random import random
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 from tensorflow.keras.preprocessing.text import Tokenizer
 from tensorflow.keras.utils import to_categorical
@@ -27,6 +28,14 @@ texts, labels, labels_index = get_texts_labels()
 
 print('Found {} texts.'.format(len(texts)))
 
+# fake rationales
+rationales = np.zeros((len(texts), len(labels_index), MAX_SEQUENCE_LENGTH))
+for i in range(rationales.shape[0]):
+    j = labels[i]
+    for k in range(rationales.shape[2]):
+        if random() < 0.03:
+            rationales[i][j][k] = 1
+
 # Vectorize the text samples into a 2D integer tensor
 tokenizer = Tokenizer(num_words=MAX_NUM_WORDS)
 tokenizer.fit_on_texts(texts)
@@ -41,16 +50,14 @@ labels = to_categorical(np.asarray(labels))
 print('Shape of data tensor:', data.shape)
 print('Shape of label tensor:', labels.shape)
 
-# split the data into a training set and a validation set
 indices = np.arange(data.shape[0])
 np.random.shuffle(indices)
 data = data[indices]
 labels = labels[indices]
+rationales = rationales[indices]
 num_validation_samples = int(VALIDATION_SPLIT * data.shape[0])
 
-# fake rationales
-rationales = np.zeros((data.shape[0], len(labels_index), MAX_SEQUENCE_LENGTH))
-
+# split the data into a training set and a validation set
 x_train = data[:-num_validation_samples]
 y_train = labels[:-num_validation_samples]
 r_train = rationales[:-num_validation_samples]
