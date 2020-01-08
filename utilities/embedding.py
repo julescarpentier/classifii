@@ -4,7 +4,7 @@ import numpy as np
 from tensorflow.keras.initializers import Constant
 from tensorflow.keras.layers import Embedding
 
-BASE_DIR = '../data'
+BASE_DIR = 'data'
 GLOVE_DIR = os.path.join(BASE_DIR, 'glove.6B')
 EMBEDDING_DIM = 100
 

@@ -19,6 +19,12 @@ MAX_SEQUENCE_LENGTH = 1000
 MAX_NUM_WORDS = 20000
 VALIDATION_SPLIT = 0.2
 
+# ensure the output folder exists
+try:
+    os.makedirs('output')
+except OSError:
+    pass
+
 # first, prepare text samples and their labels
 
 print('Processing text dataset')
@@ -80,18 +86,12 @@ spatial_dropout_history = spatial_dropout_model.fit(x_train, y_train, batch_size
                                                     validation_data=(x_val, y_val))
 batchnorm_history = batchnorm_model.fit(x_train, y_train, batch_size=128, epochs=10, validation_data=(x_val, y_val))
 
-# ensure the output folder exists
-try:
-    os.makedirs('output')
-except OSError:
-    pass
-
 # Plot control, dropout and batchnorm accuracies
-plot_compare_acc('./output/dropout_batchnorm_comparison_acc.png',
+plot_compare_acc('output/dropout_batchnorm_comparison_acc.png',
                  ['Control', 'Dropout', 'Spatial Dropout', 'BatchNorm'], control_history, dropout_history,
                  spatial_dropout_history, batchnorm_history)
 
 # Plot control, dropout and batchnorm losses
-plot_compare_loss('./output/dropout_batchnorm_comparison_loss.png',
+plot_compare_loss('output/dropout_batchnorm_comparison_loss.png',
                   ['Control', 'Dropout', 'Spatial Dropout', 'BatchNorm'], control_history, dropout_history,
                   spatial_dropout_history, batchnorm_history)

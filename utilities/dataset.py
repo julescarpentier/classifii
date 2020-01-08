@@ -1,7 +1,7 @@
 import os
 import sys
 
-BASE_DIR = '../data'
+BASE_DIR = 'data'
 TEXT_DATA_DIR = os.path.join(BASE_DIR, '20news-18828')
 
 

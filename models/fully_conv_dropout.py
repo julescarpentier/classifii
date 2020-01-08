@@ -1,7 +1,12 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+from os import path
+
 from tensorflow.keras.layers import Dense, Conv1D, Input, Dropout, GlobalAveragePooling1D
 from tensorflow.keras.models import Model
+from tensorflow.keras.utils import plot_model
+
+IMAGE_PATH = 'output/fully_conv_dropout.png'
 
 
 def get_model(embedding_layer, max_sequence_length, nb_labels):
@@ -16,6 +21,9 @@ def get_model(embedding_layer, max_sequence_length, nb_labels):
     topic_pred = Dense(nb_labels, activation='softmax', name='topic')(x)
 
     model = Model(inputs=sequence_input, outputs=topic_pred, name='fully_conv_dropout')
+
+    if not path.exists(IMAGE_PATH):
+        plot_model(model, to_file=IMAGE_PATH, show_shapes=True)
 
     return model
 

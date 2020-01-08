@@ -6,7 +6,7 @@ from tensorflow.keras.layers import Dense, Conv1D, Input, BatchNormalization, Gl
 from tensorflow.keras.models import Model
 from tensorflow.keras.utils import plot_model
 
-IMAGE_PATH = './images/fully_conv_without_rationales.png'
+IMAGE_PATH = 'output/fully_conv_without_rationales.png'
 
 
 def get_model(embedding_layer, max_sequence_length, nb_labels):

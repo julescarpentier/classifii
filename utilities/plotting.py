@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 
 
-def plot_acc(history, fpath):
+def plot_acc(fpath, history):
     """
     Plot training & validation accuracy values
 
@@ -19,7 +19,7 @@ def plot_acc(history, fpath):
     plt.savefig(fpath)
 
 
-def plot_loss(history, fpath):
+def plot_loss(fpath, history):
     """
     Plot training & validation loss values
 
