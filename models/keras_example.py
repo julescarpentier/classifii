@@ -6,7 +6,7 @@ from tensorflow.keras.layers import Dense, Conv1D, MaxPooling1D, GlobalMaxPoolin
 from tensorflow.keras.models import Model
 from tensorflow.keras.utils import plot_model
 
-IMAGE_PATH = './images/keras_example.png'
+IMAGE_PATH = 'output/keras_example.png'
 
 
 def get_model(embedding_layer, max_sequence_length, nb_labels):

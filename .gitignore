@@ -1,7 +1,7 @@
 /venv/
 /data/
-/notebooks/images/
-/notebooks/output/
+/output/
+
 /justifii/node_modules/
 /justifii/static/
 

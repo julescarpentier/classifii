@@ -20,6 +20,12 @@ MAX_SEQUENCE_LENGTH = 1000
 MAX_NUM_WORDS = 20000
 VALIDATION_SPLIT = 0.2
 
+# ensure the output folder exists
+try:
+    os.makedirs('output')
+except OSError:
+    pass
+
 # Prepare text samples and their labels
 
 print('Processing text dataset')
@@ -79,16 +85,10 @@ pre_trained_history = pre_trained_model.fit(x_train, y_train, batch_size=128, ep
 pre_trained_trainable_history = pre_trained_trainable_model.fit(x_train, y_train, batch_size=128, epochs=10,
                                                                 validation_data=(x_val, y_val))
 
-# ensure the output folder exists
-try:
-    os.makedirs('output')
-except OSError:
-    pass
-
 # Plot trainable, pre-trained and both accuracies
-plot_compare_acc('./output/embedding_layers_comparison_acc.png', ['Trainable', 'Pre-trained', 'Both'],
+plot_compare_acc('output/embedding_layers_comparison_acc.png', ['Trainable', 'Pre-trained', 'Both'],
                  trainable_history, pre_trained_history, pre_trained_trainable_history)
 
 # Plot trainable, pre-trained and both losses
-plot_compare_loss('./output/embedding_layers_comparison_loss.png', ['Trainable', 'Pre-trained', 'Both'],
+plot_compare_loss('output/embedding_layers_comparison_loss.png', ['Trainable', 'Pre-trained', 'Both'],
                   trainable_history, pre_trained_history, pre_trained_trainable_history)

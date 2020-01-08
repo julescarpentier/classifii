@@ -8,6 +8,7 @@ from tensorflow.keras.preprocessing.sequence import pad_sequences
 from tensorflow.keras.preprocessing.text import Tokenizer
 from tensorflow.keras.utils import to_categorical
 
+from justifii.database import db_session
 from justifii.models import Text, Label
 from models import fully_conv_with_rationales, fully_conv_without_rationales
 from utilities.embedding import get_embedding_matrix, get_pre_trained_trainable_embedding_layer
@@ -18,6 +19,12 @@ tf.keras.backend.clear_session()  # For easy reset of notebook state.
 MAX_SEQUENCE_LENGTH = 1000
 MAX_NUM_WORDS = 20000
 VALIDATION_SPLIT = 0.2
+
+# ensure the output folder exists
+try:
+    os.makedirs('output')
+except OSError:
+    pass
 
 # Prepare text samples and their labels
 
@@ -31,7 +38,8 @@ for text in Text.query.filter(Text.rationales.any()):
     texts.append(text.get_content())
     labels.append(text.label.target)
     rationales.append(text.get_r(nb_labels, MAX_SEQUENCE_LENGTH))
-rationales = np.array(rationales)
+rationales = np.asarray(rationales)
+db_session.remove()
 
 print('Retrieved {} texts.'.format(len(texts)))
 
@@ -83,14 +91,12 @@ history_with_rationales = model_with_rationales.fit(x_train, (y_train, r_train),
 history_without_rationales = model_without_rationales.fit(x_train, y_train, batch_size=128, epochs=10,
                                                           validation_data=(x_val, y_val))
 
-# ensure the output folder exists
-try:
-    os.makedirs('output')
-except OSError:
-    pass
+model_with_rationales.save('output/fully_conv_with_rationales.h5')
+model_without_rationales.save('output/fully_conv_without_rationales.h5')
+print('Saved models')
 
 # Plot accuracy
-plot_acc('./output/fully_conv_with_rationales_acc.png', history_with_rationales)
+plot_acc('output/fully_conv_with_rationales_acc.png', history_with_rationales)
 
 # Plot trainable, pre-trained and both losses
-plot_loss('./output/fully_conv_with_rationales_loss.png', history_with_rationales)
+plot_loss('output/fully_conv_with_rationales_loss.png', history_with_rationales)

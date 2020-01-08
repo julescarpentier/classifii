@@ -19,6 +19,12 @@ MAX_SEQUENCE_LENGTH = 1000
 MAX_NUM_WORDS = 20000
 VALIDATION_SPLIT = 0.2
 
+# ensure the output folder exists
+try:
+    os.makedirs('output')
+except OSError:
+    pass
+
 # first, prepare text samples and their labels
 
 print('Processing text dataset')
@@ -75,16 +81,10 @@ batchnorm_1_history = batchnorm_1_model.fit(x_train, y_train, batch_size=128, ep
 batchnorm_2_history = batchnorm_2_model.fit(x_train, y_train, batch_size=128, epochs=20, validation_data=(x_val, y_val))
 batchnorm_3_history = batchnorm_3_model.fit(x_train, y_train, batch_size=128, epochs=20, validation_data=(x_val, y_val))
 
-# ensure the output folder exists
-try:
-    os.makedirs('output')
-except OSError:
-    pass
-
 # Plot batchnorm before/after activation accuracies
-plot_compare_acc('./output/batchnorms_comparison_acc.png', ['BatchNorm 1', 'BatchNorm 2', 'BatchNorm 3'],
+plot_compare_acc('output/batchnorms_comparison_acc.png', ['BatchNorm 1', 'BatchNorm 2', 'BatchNorm 3'],
                  batchnorm_1_history, batchnorm_2_history, batchnorm_3_history)
 
 # Plot batchnorm before/after activation losses
-plot_compare_loss('./output/batchnorms_comparison_loss.png', ['BatchNorm 1', 'BatchNorm 2', 'BatchNorm 3'],
+plot_compare_loss('output/batchnorms_comparison_loss.png', ['BatchNorm 1', 'BatchNorm 2', 'BatchNorm 3'],
                   batchnorm_1_history, batchnorm_2_history, batchnorm_3_history)
