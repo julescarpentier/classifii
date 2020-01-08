@@ -2,14 +2,14 @@ import os
 
 from flask import Flask
 
+from justifii.database import db_session
+
 
 def create_app(test_config=None):
     # create and configure the app
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_mapping(
         SECRET_KEY='dev',
-        SQLALCHEMY_DATABASE_URI='sqlite:////' + os.path.join(app.instance_path, 'justifii.db'),
-        SQLALCHEMY_TRACK_MODIFICATIONS=False,
     )
 
     if test_config is None:
@@ -25,8 +25,9 @@ def create_app(test_config=None):
     except OSError:
         pass
 
-    from . import database
-    database.init_app(app)
+    @app.teardown_appcontext
+    def shutdown_session(exception=None):
+        db_session.remove()
 
     from justifii.blueprints import dashboard
     app.register_blueprint(dashboard.bp)

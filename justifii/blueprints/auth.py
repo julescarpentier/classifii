@@ -5,7 +5,7 @@ from flask import (
 )
 from werkzeug.security import check_password_hash, generate_password_hash
 
-from justifii.database import db
+from justifii.database import db_session
 from justifii.models import User
 
 bp = Blueprint('auth', __name__, url_prefix='/auth')
@@ -51,8 +51,8 @@ def register():
             error = 'User {} is already registered.'.format(username)
 
         if error is None:
-            db.session.add(User(username, generate_password_hash(password)))
-            db.session.commit()
+            db_session.add(User(username, generate_password_hash(password)))
+            db_session.commit()
             flash("Registering successful", 'success')
             return redirect(url_for('auth.login'))
 

@@ -2,8 +2,8 @@ from flask import (
     Blueprint, g, render_template, url_for, abort, flash, redirect
 )
 
+from justifii.database import db_session
 from justifii.blueprints.auth import login_required
-from justifii.database import db
 from justifii.models import Rationale
 
 bp = Blueprint('rationale', __name__, url_prefix='/rationale')
@@ -37,8 +37,8 @@ def show(rationale_id):
 @login_required
 def delete(rationale_id):
     rationale = get_rationale(rationale_id)
-    db.session.delete(rationale)
-    db.session.commit()
+    db_session.delete(rationale)
+    db_session.commit()
     flash("Deleted Rationale #{}".format(rationale_id), 'success')
 
     return redirect(url_for('rationale.index'))

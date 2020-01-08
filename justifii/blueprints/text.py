@@ -2,8 +2,8 @@ from flask import (
     Blueprint, g, render_template, abort, request, flash, redirect, url_for
 )
 
+from justifii.database import db_session
 from justifii.blueprints.auth import login_required
-from justifii.database import db
 from justifii.models import Rationale, Text
 
 bp = Blueprint('text', __name__, url_prefix='/text')
@@ -55,8 +55,8 @@ def justify(text_id):
         else:
             rationale.tokens = [int(token) for token in tokens]
             if new:
-                db.session.add(rationale)
-            db.session.commit()
+                db_session.add(rationale)
+            db_session.commit()
             return redirect(url_for('text.show', text_id=text_id))
 
     return render_template('text/justify.html', text=text, rationale=rationale)

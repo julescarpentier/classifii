@@ -4,13 +4,12 @@ import os
 
 import numpy as np
 import tensorflow as tf
-from random import random
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 from tensorflow.keras.preprocessing.text import Tokenizer
 from tensorflow.keras.utils import to_categorical
 
-from models import fully_conv_rationales
-from utilities.dataset import get_texts_labels
+from justifii.models import Text, Label
+from models import fully_conv_with_rationales, fully_conv_without_rationales
 from utilities.embedding import get_embedding_matrix, get_pre_trained_trainable_embedding_layer
 from utilities.plotting import plot_acc, plot_loss
 
@@ -22,19 +21,19 @@ VALIDATION_SPLIT = 0.2
 
 # Prepare text samples and their labels
 
-print('Processing text dataset')
+print('Retrieving texts from database')
 
-texts, labels, labels_index = get_texts_labels()
+texts = []
+labels = []
+nb_labels = Label.query.count()
+rationales = []
+for text in Text.query.filter(Text.rationales.any()):
+    texts.append(text.get_content())
+    labels.append(text.label.target)
+    rationales.append(text.get_r(nb_labels, MAX_SEQUENCE_LENGTH))
+rationales = np.array(rationales)
 
-print('Found {} texts.'.format(len(texts)))
-
-# fake rationales
-rationales = np.zeros((len(texts), len(labels_index), MAX_SEQUENCE_LENGTH))
-for i in range(rationales.shape[0]):
-    j = labels[i]
-    for k in range(rationales.shape[2]):
-        if random() < 0.03:
-            rationales[i][j][k] = 1
+print('Retrieved {} texts.'.format(len(texts)))
 
 # Vectorize the text samples into a 2D integer tensor
 tokenizer = Tokenizer(num_words=MAX_NUM_WORDS)
@@ -74,11 +73,15 @@ embedding_matrix = get_embedding_matrix(num_words, MAX_NUM_WORDS, word_index)
 # Embedding layer
 embedding_layer = get_pre_trained_trainable_embedding_layer(num_words, embedding_matrix, MAX_SEQUENCE_LENGTH)
 
-print('Training model.')
+print('Training models.')
 
-model = fully_conv_rationales.get_compiled_model(embedding_layer, MAX_SEQUENCE_LENGTH, len(labels_index))
-
-history = model.fit(x_train, (y_train, r_train), batch_size=128, epochs=10, validation_data=(x_val, (y_val, r_val)))
+model_with_rationales = fully_conv_with_rationales.get_compiled_model(embedding_layer, MAX_SEQUENCE_LENGTH, nb_labels)
+model_without_rationales = fully_conv_without_rationales.get_compiled_model(embedding_layer, MAX_SEQUENCE_LENGTH,
+                                                                            nb_labels)
+history_with_rationales = model_with_rationales.fit(x_train, (y_train, r_train), batch_size=128, epochs=10,
+                                                    validation_data=(x_val, (y_val, r_val)))
+history_without_rationales = model_without_rationales.fit(x_train, y_train, batch_size=128, epochs=10,
+                                                          validation_data=(x_val, y_val))
 
 # ensure the output folder exists
 try:
@@ -87,7 +90,7 @@ except OSError:
     pass
 
 # Plot accuracy
-plot_acc('./output/fully_conv_rationales_acc.png', history)
+plot_acc('./output/fully_conv_with_rationales_acc.png', history_with_rationales)
 
 # Plot trainable, pre-trained and both losses
-plot_loss('./output/fully_conv_rationales_loss.png', history)
+plot_loss('./output/fully_conv_with_rationales_loss.png', history_with_rationales)

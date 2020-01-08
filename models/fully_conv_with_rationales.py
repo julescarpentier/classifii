@@ -7,7 +7,7 @@ from tensorflow.keras.layers import Dense, Conv1D, Input, BatchNormalization, Gl
 from tensorflow.keras.models import Model
 from tensorflow.keras.utils import plot_model
 
-IMAGE_PATH = './images/fully_conv_rationales.png'
+IMAGE_PATH = './images/fully_conv_with_rationales.png'
 
 
 def get_model(embedding_layer, max_sequence_length, nb_labels):
@@ -29,7 +29,7 @@ def get_model(embedding_layer, max_sequence_length, nb_labels):
     # batch x tokens x feats / feats x labels -> batch x labels x tokens
     cam = Lambda(lambda t: tf.einsum('btf,fl->blt', t, w), name='cam')(f)
 
-    model = Model(inputs=sequence_input, outputs=[topic_pred, cam], name='fully_conv_rationales')
+    model = Model(inputs=sequence_input, outputs=[topic_pred, cam], name='fully_conv_with_rationales')
 
     if not path.exists(IMAGE_PATH):
         plot_model(model, to_file=IMAGE_PATH, show_shapes=True)
@@ -47,7 +47,6 @@ def get_compiled_model(embedding_layer, max_sequence_length, nb_labels):
 
 def rationale_loss(r_true, r_pred):
     # label_id = tf.argmax(tf.reduce_sum(r_true, axis=2))
-
     loss = tf.reduce_sum(r_true * (r_true - tf.sigmoid(r_pred)))
 
     return loss

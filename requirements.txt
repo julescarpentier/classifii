@@ -1,12 +1,10 @@
+sqlalchemy
 numpy
 werkzeug
 hub
 click
 flask
-flask_sqlalchemy
 matplotlib
 tensorflow
-nltk
-pandas
 graphviz
 pydot

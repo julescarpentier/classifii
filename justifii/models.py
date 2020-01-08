@@ -1,19 +1,19 @@
 import sys
 
 import numpy as np
-
-from tensorflow.keras.preprocessing.text import text_to_word_sequence
+from sqlalchemy import Column, Integer, String, PickleType, ForeignKey
+from sqlalchemy.orm import relationship
 from tensorflow.keras.preprocessing.sequence import pad_sequences
+from tensorflow.keras.preprocessing.text import text_to_word_sequence
 
-from justifii.database import db
+from justifii.database import Base
 
 
-class User(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(80), unique=True, nullable=False)
-    password = db.Column(db.String(255), nullable=False)
+class User(Base):
+    username = Column(String(80), unique=True, nullable=False)
+    password = Column(String(255), nullable=False)
 
-    rationales = db.relationship('Rationale', backref='user', lazy=True)
+    rationales = relationship(lambda: Rationale, backref='user', lazy=True)
 
     def __init__(self, username=None, password=None):
         self.username = username
@@ -26,12 +26,11 @@ class User(db.Model):
         return self.username
 
 
-class Text(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    fpath = db.Column(db.String(120), unique=True, nullable=False)
+class Text(Base):
+    fpath = Column(String(120), unique=True, nullable=False)
 
-    label_id = db.Column(db.Integer, db.ForeignKey('label.id'), nullable=False)
-    rationales = db.relationship('Rationale', backref='text', lazy=True)
+    label_id = Column(Integer, ForeignKey('labels.id'), nullable=False)
+    rationales = relationship(lambda: Rationale, backref='text', lazy=True)
 
     def __init__(self, fpath=None, label_id=None):
         self.fpath = fpath
@@ -55,29 +54,33 @@ class Text(db.Model):
     def get_word_sequence(self):
         return text_to_word_sequence(self.get_content(), lower=False)
 
+    def get_r(self, nb_labels, max_sequence_length):
+        sum_r = sum(rationale.get_r(nb_labels, max_sequence_length) for rationale in self.rationales)
+        return 1/len(self.rationales) * sum_r
 
-class Label(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(80), unique=True, nullable=False)
 
-    texts = db.relationship('Text', backref='label', lazy=True)
+class Label(Base):
+    name = Column(String(80), unique=True, nullable=False)
+    target = Column(Integer, unique=True, nullable=False)
 
-    def __init__(self, name=None):
+    texts = relationship(lambda: Text, backref='label', lazy=True)
+
+    def __init__(self, name=None, target=None):
         self.name = name
+        self.target = target
 
     def __repr__(self):
-        return '<Label id={}, name={}>'.format(self.id, self.name)
+        return '<Label id={}, name={}, target={}>'.format(self.id, self.name, self.target)
 
     def __str__(self):
         return self.name
 
 
-class Rationale(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    tokens = db.Column(db.PickleType, nullable=True)
+class Rationale(Base):
+    tokens = Column(PickleType, nullable=True)
 
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    text_id = db.Column(db.Integer, db.ForeignKey('text.id'), nullable=False)
+    user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
+    text_id = Column(Integer, ForeignKey('texts.id'), nullable=False)
 
     def __init__(self, tokens=None):
         self.tokens = tokens
@@ -94,14 +97,13 @@ class Rationale(db.Model):
 
         return False
 
-    def get_r(self, nb_labels=Label.query().count()):
-        label_id = self.text.label.id - 1
+    def get_r(self, nb_labels, max_sequence_length):
         word_sequence = self.text.get_word_sequence()
         r = np.zeros((nb_labels, len(word_sequence)))
         for token in self.tokens:
-            r[label_id][token] = 1
+            r[self.text.label.target][token] = 1
 
-        return pad_sequences(r, maxlen=1000)
+        return pad_sequences(r, maxlen=max_sequence_length)
 
     def get_show(self):
         text = self.text.get_content()
