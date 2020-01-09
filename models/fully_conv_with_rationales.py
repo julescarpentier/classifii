@@ -31,6 +31,9 @@ def get_model(embedding_layer, max_sequence_length, nb_labels):
 
     model = Model(inputs=sequence_input, outputs=[topic_pred, cam], name='fully_conv_with_rationales')
 
+    if not path.exists(IMAGE_PATH):
+        plot_model(model, to_file=IMAGE_PATH, show_shapes=True)
+
     return model
 
 

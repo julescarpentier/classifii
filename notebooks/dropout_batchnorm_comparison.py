@@ -15,6 +15,10 @@ from utilities.plotting import plot_compare_acc, plot_compare_loss
 
 tf.keras.backend.clear_session()  # For easy reset of notebook state.
 
+os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
+# The GPU id to use, usually either "0" or "1"
+os.environ["CUDA_VISIBLE_DEVICES"] = "3"
+
 MAX_SEQUENCE_LENGTH = 1000
 MAX_NUM_WORDS = 20000
 VALIDATION_SPLIT = 0.2

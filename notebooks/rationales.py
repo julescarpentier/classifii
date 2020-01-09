@@ -2,19 +2,23 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 import os
 
+import matplotlib.pyplot as plt
 import numpy as np
 import tensorflow as tf
-from keras.preprocessing.sequence import pad_sequences
-from keras.preprocessing.text import Tokenizer
-from keras.utils import to_categorical
+from tensorflow.keras.preprocessing.sequence import pad_sequences
+from tensorflow.keras.preprocessing.text import Tokenizer
+from tensorflow.keras.utils import to_categorical
 
 from justifii.database import db_session
 from justifii.models import Text, Label
 from models import fully_conv_with_rationales, fully_conv_without_rationales
 from utilities.embedding import get_embedding_matrix, get_pre_trained_trainable_embedding_layer
-from utilities.plotting import plot_acc, plot_loss
 
 tf.keras.backend.clear_session()  # For easy reset of notebook state.
+
+os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
+# The GPU id to use, usually either "0" or "1"
+os.environ["CUDA_VISIBLE_DEVICES"] = "3"
 
 MAX_SEQUENCE_LENGTH = 1000
 MAX_NUM_WORDS = 20000
@@ -86,17 +90,39 @@ print('Training models.')
 model_with_rationales = fully_conv_with_rationales.get_compiled_model(embedding_layer, MAX_SEQUENCE_LENGTH, nb_labels)
 model_without_rationales = fully_conv_without_rationales.get_compiled_model(embedding_layer, MAX_SEQUENCE_LENGTH,
                                                                             nb_labels)
-history_with_rationales = model_with_rationales.fit(x_train, (y_train, r_train), batch_size=128, epochs=10,
+history_with_rationales = model_with_rationales.fit(x_train, (y_train, r_train), batch_size=16, epochs=10,
                                                     validation_data=(x_val, (y_val, r_val)))
-history_without_rationales = model_without_rationales.fit(x_train, y_train, batch_size=128, epochs=10,
+history_without_rationales = model_without_rationales.fit(x_train, y_train, batch_size=16, epochs=10,
                                                           validation_data=(x_val, y_val))
 
-model_with_rationales.save('output/fully_conv_with_rationales.h5')
-model_without_rationales.save('output/fully_conv_without_rationales.h5')
-print('Saved models')
+# model_with_rationales.save('output/fully_conv_with_rationales.h5')
+# model_without_rationales.save('output/fully_conv_without_rationales.h5')
+# print('Saved models')
 
 # Plot accuracy
-plot_acc('output/fully_conv_with_rationales_acc.png', history_with_rationales)
+# plot_acc('output/fully_conv_with_rationales_acc.png', history_with_rationales)
+plt.figure()
+plt.plot(history_with_rationales.history['topic_acc'])
+plt.plot(history_without_rationales['acc'])
+plt.plot(history_with_rationales.history['val_topic_acc'], '--')
+plt.plot(history_without_rationales['val_acc'], '--')
+plt.title('Models accuracy')
+plt.ylabel('Accuracy')
+plt.xlabel('Epoch')
+plt.legend(['Train R', 'Train no R', 'Test R', 'Test no R'], loc='upper left')
+plt.savefig('output/fully_conv_with_rationales_acc.png')
+plt.close()
 
 # Plot trainable, pre-trained and both losses
-plot_loss('output/fully_conv_with_rationales_loss.png', history_with_rationales)
+# plot_loss('output/fully_conv_with_rationales_loss.png', history_with_rationales)
+plt.figure()
+plt.plot(history_with_rationales.history['topic_loss'])
+plt.plot(history_without_rationales['loss'])
+plt.plot(history_with_rationales.history['val_topic_loss'], '--')
+plt.plot(history_without_rationales['val_loss'], '--')
+plt.title('Models losses')
+plt.ylabel('Loss')
+plt.xlabel('Epoch')
+plt.legend(['Train R', 'Train no R', 'Test R', 'Test no R'], loc='upper left')
+plt.savefig('output/fully_conv_with_rationales_loss.png')
+plt.close()
