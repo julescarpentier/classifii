@@ -4,10 +4,13 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 module.exports = {
     mode: "development",
-    entry: "./assets/js/app.js",
+    entry: {
+        app: './assets/js/app.js',
+        dashboard: './assets/js/dashboard.js',
+    },
     output: {
         path: path.resolve(__dirname, "static"),
-        filename: "script.js",
+        filename: "[name].js",
     },
     module: {
         rules: [
@@ -45,7 +48,7 @@ module.exports = {
     },
     plugins: [
         new MiniCssExtractPlugin({
-            filename: "style.css"
+            filename: "app.css"
         }),
         new webpack.ProvidePlugin({
             $: 'jquery',

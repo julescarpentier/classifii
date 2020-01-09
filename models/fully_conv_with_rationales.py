@@ -46,7 +46,6 @@ def get_compiled_model(embedding_layer, max_sequence_length, nb_labels):
 
 
 def rationale_loss(r_true, r_pred):
-    # label_id = tf.argmax(tf.reduce_sum(r_true, axis=2))
     loss = tf.reduce_sum(r_true * (r_true - tf.sigmoid(r_pred)))
 
-    return loss
+    return loss / tf.reduce_sum(r_true)

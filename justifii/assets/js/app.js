@@ -1,5 +1,7 @@
 // Import app styles
 import '../scss/app.scss';
+// jQuery
+import $ from 'jquery';
 // jQuery for Bootstrap
 import 'bootstrap';
 // jQuery Easing
