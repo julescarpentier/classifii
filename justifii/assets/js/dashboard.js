@@ -10,7 +10,51 @@ $(document).ready(function () {
 
     $.ajax({
         dataType: "json",
-        url: $SCRIPT_ROOT + "/_get_rationales_labels",
+        url: $AJAX_TEXTS_LABELS_URL,
+        success: function (data) {
+            _labels = data.labels;
+            _data = data.data;
+        },
+        complete: function () {
+            const ctx = document.getElementById("textsBarChart");
+            new Chart(ctx, {
+                type: 'horizontalBar',
+                data: {
+                    labels: _labels,
+                    datasets: [{
+                        label: "Rationales",
+                        backgroundColor: "rgba(2,117,216,1)",
+                        borderColor: "rgba(2,117,216,1)",
+                        data: _data
+                    }]
+                },
+                options: {
+                    scales: {
+                        xAxes: [{
+                            ticks: {
+                                min: 0
+                            },
+                            gridLines: {
+                                display: true
+                            }
+                        }],
+                        yAxes: [{
+                            gridLines: {
+                                display: false
+                            }
+                        }],
+                    },
+                    legend: {
+                        display: false
+                    }
+                }
+            });
+        }
+    });
+
+    $.ajax({
+        dataType: "json",
+        url: $AJAX_RATIONALES_LABELS_URL,
         success: function (data) {
             _labels = data.labels;
             _data = data.data;
@@ -54,44 +98,22 @@ $(document).ready(function () {
 
     $.ajax({
         dataType: "json",
-        url: $SCRIPT_ROOT + "/_get_texts_labels",
+        url: $AJAX_RATIONALES_USERS_URL,
         success: function (data) {
             _labels = data.labels;
             _data = data.data;
         },
         complete: function () {
-            const ctx = document.getElementById("textsBarChart");
+            const ctx = document.getElementById("usersPieChart");
             new Chart(ctx, {
-                type: 'bar',
+                type: 'pie',
                 data: {
                     labels: _labels,
                     datasets: [{
-                        label: "Rationales",
-                        backgroundColor: "rgba(2,117,216,1)",
-                        borderColor: "rgba(2,117,216,1)",
-                        data: _data
-                    }]
+                        data: _data,
+                        backgroundColor: ['#007bff', '#dc3545', '#ffc107', '#28a745'],
+                    }],
                 },
-                options: {
-                    scales: {
-                        xAxes: [{
-                            gridLines: {
-                                display: false
-                            }
-                        }],
-                        yAxes: [{
-                            ticks: {
-                                min: 0
-                            },
-                            gridLines: {
-                                display: true
-                            }
-                        }],
-                    },
-                    legend: {
-                        display: false
-                    }
-                }
             });
         }
     });

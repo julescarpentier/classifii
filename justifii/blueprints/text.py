@@ -1,5 +1,5 @@
 from flask import (
-    Blueprint, g, render_template, abort, request, flash, redirect, url_for
+    Blueprint, g, render_template, abort, request, flash, redirect, url_for, jsonify
 )
 
 from justifii.database import db_session
@@ -21,6 +21,19 @@ def get_text(text_id):
 @bp.route('/')
 def index():
     return render_template('text/index.html', texts=Text.query.all())
+
+
+@bp.route('/_get_texts', methods=('GET',))
+def get_texts():
+    data = [{
+        'id': text.id,
+        'fpath': text.fpath,
+        'label': text.label.name,
+        'show_url': url_for('text.show', text_id=text.id),
+        'justify_url': url_for('text.justify', text_id=text.id),
+    } for text in Text.query.all()]
+
+    return jsonify(data=data)
 
 
 @bp.route('/<int:text_id>')

@@ -1,13 +1,17 @@
-// Import app styles
+// ===== STYLE =====
+// Import app scss
 import '../scss/app.scss';
-// jQuery
-import $ from 'jquery';
+// DataTables and extensions css
+import 'datatables.net-bs4/css/dataTables.bootstrap4.css'
+import 'datatables.net-select-bs4/css/select.bootstrap4.css'
+import 'datatables.net-buttons-bs4/css/buttons.bootstrap4.css'
+//
+//
+// ===== JAVASCRIPT =====
 // jQuery for Bootstrap
 import 'bootstrap';
 // jQuery Easing
 import 'jquery.easing';
-// DataTables
-import 'datatables.net-bs4'
 
 (function ($) {
     "use strict"; // Start of use strict
@@ -46,11 +50,6 @@ import 'datatables.net-bs4'
             scrollTop: ($($anchor.attr('href')).offset().top)
         }, 1000, 'easeInOutExpo');
         event.preventDefault();
-    });
-
-    // Call the dataTables jQuery plugin
-    $(document).ready(function () {
-        $('#dataTable').DataTable();
     });
 
 })(jQuery); // End of use strict

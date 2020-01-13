@@ -21,7 +21,7 @@
             </div>
         </div>
         <div class="col-xl-3 col-sm-6 mb-3">
-            <div class="card text-white bg-secondary o-hidden h-100">
+            <div class="card text-white bg-info o-hidden h-100">
                 <div class="card-body">
                     <div class="card-body-icon">
                         <i class="fas fa-fw fa-comments"></i>
@@ -42,7 +42,7 @@
             <div class="card mb-3">
                 <div class="card-header">
                     <i class="fas fa-chart-bar"></i>
-                    Texts / labels
+                    Texts / Labels
                 </div>
                 <div class="card-body">
                     <canvas id="textsBarChart" width="100%" height="50"></canvas>
@@ -51,14 +51,25 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-lg-12">
+        <div class="col-lg-8">
             <div class="card mb-3">
                 <div class="card-header">
                     <i class="fas fa-chart-bar"></i>
-                    Rationales / labels
+                    Rationales / Labels
                 </div>
                 <div class="card-body">
                     <canvas id="rationalesBarChart" width="100%" height="50"></canvas>
+                </div>
+            </div>
+        </div>
+    <div class="col-lg-4">
+            <div class="card mb-3">
+                <div class="card-header">
+                    <i class="fas fa-chart-pie"></i>
+                    Rationales / Users
+                </div>
+                <div class="card-body">
+                    <canvas id="usersPieChart" width="100%" height="100"></canvas>
                 </div>
             </div>
         </div>
@@ -67,5 +78,10 @@
 
 {% block scripts %}
     {{ super() }}
+    <script type="text/javascript">
+        $AJAX_TEXTS_LABELS_URL = {{ url_for('dashboard.get_texts_labels')|tojson|safe }};
+        $AJAX_RATIONALES_LABELS_URL = {{ url_for('dashboard.get_rationales_labels')|tojson|safe }};
+        $AJAX_RATIONALES_USERS_URL = {{ url_for('dashboard.get_users_participation')|tojson|safe }};
+    </script>
     <script src="{{ url_for('static', filename='dashboard.js') }}"></script>
 {% endblock %}

@@ -1,9 +1,9 @@
 from flask import (
-    Blueprint, g, render_template, url_for, abort, flash, redirect
+    Blueprint, g, render_template, url_for, abort, flash, redirect, jsonify
 )
 
-from justifii.database import db_session
 from justifii.blueprints.auth import login_required
+from justifii.database import db_session
 from justifii.models import Rationale
 
 bp = Blueprint('rationale', __name__, url_prefix='/rationale')
@@ -23,7 +23,22 @@ def get_rationale(rationale_id, check_owner=True):
 
 @bp.route('/', methods=('GET',))
 def index():
-    return render_template('rationale/index.html', rationales=Rationale.query.limit(1000).all())
+    return render_template('rationale/index.html')
+
+
+@bp.route('/_get_rationales', methods=('GET',))
+def get_rationales():
+    data = [{
+        'id': rationale.id,
+        'user': rationale.user.username,
+        'text': rationale.text.fpath,
+        'tokens': rationale.tokens,
+        'show_url': url_for('rationale.show', rationale_id=rationale.id),
+        'edit_url': url_for('text.justify', text_id=rationale.text.id),
+        'delete_url': url_for('rationale.delete', rationale_id=rationale.id),
+    } for rationale in Rationale.query.all()]
+
+    return jsonify(data=data)
 
 
 @bp.route('/<int:rationale_id>', methods=('GET',))

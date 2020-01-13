@@ -7,6 +7,8 @@ module.exports = {
     entry: {
         app: './assets/js/app.js',
         dashboard: './assets/js/dashboard.js',
+        texts: './assets/js/texts.js',
+        rationales: './assets/js/rationales.js',
     },
     output: {
         path: path.resolve(__dirname, "static"),
@@ -30,6 +32,13 @@ module.exports = {
                         }
                     },
                     'sass-loader',
+                ],
+            },
+            {
+                test: /\.css$/,
+                use: [
+                    MiniCssExtractPlugin.loader,
+                    'css-loader',
                 ],
             },
             {

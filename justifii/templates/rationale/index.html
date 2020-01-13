@@ -8,48 +8,17 @@
         </div>
         <div class="card-body">
             <div class="table-responsive">
-                <table class="table table-bordered" id="dataTable">
-                    <thead>
-                    <tr>
-                        <th scope="col">#</th>
-                        <th scope="col">User</th>
-                        <th scope="col">Text</th>
-                        <th scope="col">Tokens</th>
-                        <th scope="col">Actions</th>
-                    </tr>
-                    </thead>
-                    <tfoot>
-                    <tr>
-                        <th scope="col">#</th>
-                        <th scope="col">User</th>
-                        <th scope="col">Text</th>
-                        <th scope="col">Tokens</th>
-                        <th scope="col">Actions</th>
-                    </tr>
-                    </tfoot>
-                    <tbody>
-                    {% for rationale in rationales %}
-                        <tr>
-                            <th scope="row">{{ rationale.id }}</th>
-                            <td>{{ rationale.user }}</td>
-                            <td>{{ rationale.text.fpath }}</td>
-                            <td>{{ rationale.tokens }}</td>
-                            <td>
-                                <a class="btn btn-sm btn-info"
-                                   href="{{ url_for('rationale.show', rationale_id=rationale.id) }}">show</a>
-                                <a class="btn btn-sm btn-primary"
-                                   href="{{ url_for('text.justify', text_id=rationale.text.id) }}">edit</a>
-                                <form class="d-inline"
-                                      action="{{ url_for('rationale.delete', rationale_id=rationale.id) }}"
-                                      method="post">
-                                    <button type="submit" class="btn btn-sm btn-danger">delete</button>
-                                </form>
-                            </td>
-                        </tr>
-                    {% endfor %}
-                    </tbody>
-                </table>
+                <table class="table table-striped table-bordered" id="rationalesDataTable"></table>
             </div>
         </div>
     </div>
+    <form id="delete-form" class="d-none" method="post"></form>
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+    <script type="text/javascript">
+        $AJAX_RATIONALES_URL = {{ url_for('rationale.get_rationales')|tojson|safe }};
+    </script>
+    <script src="{{ url_for('static', filename='rationales.js') }}"></script>
 {% endblock %}

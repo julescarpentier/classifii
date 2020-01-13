@@ -8,40 +8,16 @@
         </div>
         <div class="card-body">
             <div class="table-responsive">
-                <table class="table table-bordered" id="dataTable">
-                    <thead>
-                    <tr>
-                        <th scope="col">#</th>
-                        <th scope="col">File Path</th>
-                        <th scope="col">Label</th>
-                        <th scope="col">Actions</th>
-                    </tr>
-                    </thead>
-                    <tfoot>
-                    <tr>
-                        <th scope="col">#</th>
-                        <th scope="col">File Path</th>
-                        <th scope="col">Label</th>
-                        <th scope="col">Actions</th>
-                    </tr>
-                    </tfoot>
-                    <tbody>
-                    {% for text in texts %}
-                        <tr>
-                            <th scope="row">{{ text.id }}</th>
-                            <td>{{ text.fpath }}</td>
-                            <td>{{ text.label }}</td>
-                            <td>
-                                <a class="btn btn-sm btn-primary"
-                                   href="{{ url_for('text.show', text_id=text.id) }}">show</a>
-                                <a class="btn btn-sm btn-secondary"
-                                   href="{{ url_for('text.justify', text_id=text.id) }}">justify</a>
-                            </td>
-                        </tr>
-                    {% endfor %}
-                    </tbody>
-                </table>
+                <table class="table table-striped table-bordered" id="textsDataTable"></table>
             </div>
         </div>
     </div>
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+    <script type="text/javascript">
+        $AJAX_TEXTS_URL = {{ url_for('text.get_texts')|tojson|safe }};
+    </script>
+    <script src="{{ url_for('static', filename='texts.js') }}"></script>
 {% endblock %}
